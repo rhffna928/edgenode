@@ -4,3 +4,10 @@
 
 ## 7.30 EdgeNode 세부구성 설계
 ![image](https://github.com/user-attachments/assets/775a392c-59dc-4176-9ed3-f666d73e171c)
+
+
+## Branch 99cone2-patch-1 
+- 99cone2-patch-1에서 테스트 진행
+- LXD
+- MQTT
+- Socket
