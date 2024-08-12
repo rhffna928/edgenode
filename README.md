@@ -8,6 +8,6 @@
 
 ## Branch 99cone2-patch-1 
 - 99cone2-patch-1에서 테스트 진행
-- LXD
-- MQTT
-- Socket
+- LXD 설치과정
+- MQTT 설치과정
+- Socket 구성방안
