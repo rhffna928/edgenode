@@ -288,7 +288,6 @@ class Mqtt:
 
             #subscribe용 콜백
             self.client.on_subscribe = self.on_subscribe
-            self.client.on_message = self.on_message
 
             if retry is False:
                 self.subcribes = subcribes
@@ -367,13 +366,13 @@ class Mqtt:
             # 메시지 타입에 따라 적절한 토픽으로 발행
             if msg_type == "init":
                 self.pubHub4Init(send_message)
-                logging.info("Init 메시지 발행 완료")
-            elif msg_type in ["vehicle", "alarm", "globalpath", "tractor", "cls"]:
+                logging.info(f"Init 메시지 {send_message} 발행 완료")
+            elif msg_type in ["vehicle", "status", "alarm", "globalpath", "tractor", "cls"]:
                 self.pubHub4Node(send_message)
-                logging.info("Node 메시지 발행 완료")
+                logging.info(f"Node 메시지 {send_message} 발행 완료")
             elif msg_type == "mobile":
                 self.pubHub4Mobile(send_message)
-                logging.info("Mobile 메시지 발행 완료")
+                logging.info(f"Mobile 메시지 {send_message} 발행 완료")
             else:
                 logging.warning(f"알 수 없는 메시지 타입: {msg_type}")
                 return False

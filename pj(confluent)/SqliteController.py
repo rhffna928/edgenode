@@ -116,8 +116,7 @@ pd_dt = pd.DataFrame(result['datas'])
 class SqliteController:
     
     def __init__(self, dbfile):
-        self.conn = sqlite3.connect(dbfile, isolation_level=None,check_same_thread=False)
-        self.conn.autocommit = True        
+        self.conn = sqlite3.connect(dbfile, isolation_level=None,check_same_thread=False)     
         self.curs = self.conn.cursor()
 
     def close(self):
