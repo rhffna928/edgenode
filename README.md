@@ -25,5 +25,7 @@
 
 
 ## 25년
+### Edge-Node 컨테이너화 구성
+![image](https://github.com/user-attachments/assets/c7f2e3e4-53b4-462b-b5cb-b387fcb23cb7)
 
 
