@@ -236,13 +236,15 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 json_message["data"] = res["data"]
                                  
                                 send_message = json.dumps(json_message, ensure_ascii=False)
-                                send_kafka_msg('shared_topic', message=json_message)
+                                send_kafka_msg('rep', message=json_message)
 
-                            elif _command == "80000":
-                                send_kafka_msg('cls_info', message=res_repack)
-
-                            elif _command in ["70300", "70500"]:
-                                send_kafka_msg('trac_info', message=res_repack)
+                            elif _cmd == "req":
+                                send_kafka_msg('req', message=res_repack)
+                            elif _cmd == "event":
+                                send_kafka_msg('event', message=res_repack)
+                                
+                            elif _cmd == "heartbeat":
+                                send_kafka_msg('heartbeat', message=res_repack)
 
                         except json.decoder.JSONDecodeError as err:
                             logging.exception("json.decoder.JSONDecodeError {0}, [{1}]".format(err, data))
