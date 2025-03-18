@@ -45,7 +45,7 @@ def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
     
-    logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
+    #logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
 
 
 def create_rotating_log(path, _config):
@@ -239,9 +239,32 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 send_kafka_msg('rep', message=json_message)
 
                             elif _cmd == "req":
-                                send_kafka_msg('req', message=res_repack)
+                                if _actn == "init":
+                                    if _strtpnt == "M":
+                                        _edgeId = _userId
+                                    else:
+                                        _edgeId = _edgeId
+
+                                resheader["cmd"] = _cmd_req
+                                resheader["strtpnt"] = _strtpnt_res
+                                resheader["dstn"] = _dstn_res
+                                resheader["edgeId"] = _edgeId
+                                
+                                json_message["header"] = resheader
+                                
+                                json_message["data"] = res["data"]
+                                 
+                                send_kafka_msg('req', message=json_message)
                             elif _cmd == "event":
-                                send_kafka_msg('event', message=res_repack)
+                                resheader["cmd"] = _cmd_req
+                                resheader["strtpnt"] = _strtpnt_res
+                                resheader["dstn"] = _dstn_res
+                                
+                                json_message["header"] = resheader
+                                
+                                json_message["data"] = res["data"]
+                                 
+                                send_kafka_msg('event', message=json_message)
                                 
                             elif _cmd == "heartbeat":
                                 send_kafka_msg('heartbeat', message=res_repack)

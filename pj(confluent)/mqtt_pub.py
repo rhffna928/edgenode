@@ -42,7 +42,7 @@ recv_encoding = 'CP949'
 # Kafka Consumer 설정 변경
 consumer_config = {
     'bootstrap.servers': '172.30.1.20:9092',
-    'group.id': 'test-group123123',
+    'group.id': random.randint(0, 100),
     'auto.offset.reset': 'latest',
     'enable.auto.commit': False
 }
@@ -144,9 +144,9 @@ class Mqtt:
         self.PUB_EDGENODE_TOPIC = None
         self.PUB_EDGENODE_MOBILE_TOPIC = None
 
-        self.edgeid = None
+        self.edgeId = None
         self.edgeTy = None
-        self.userid = None
+        self.userId = None
 
         self.notOkAddSub = True
 
@@ -189,7 +189,7 @@ class Mqtt:
             _header["dtlActn"] = "all"
             _header["strtpnt"] = "N"
             _header["dstn"] = "H"
-            _header["edgeId"] = self.edgeid
+            _header["edgeId"] = self.edgeId
             _header["userId"] = ""
             _header["command"] = "00001"
             _header["edgeTy"] = self.edgeTy
@@ -197,7 +197,7 @@ class Mqtt:
 
             _json_message["header"] = _header
 
-            _data["edgeId"] = self.edgeid
+            _data["edgeId"] = self.edgeId
 
             data_message = str(json.dumps(_data, ensure_ascii=False))
             send_data = jvm_msg_encrypt_class.encode(now_str, data_message)
@@ -209,7 +209,7 @@ class Mqtt:
             time.sleep(0.02)
 
             # edgeId로 Mqtt.subscribe 등록
-            self.addSub(self.edgeid)
+            self.addSub(self.edgeId)
 
             #while self.notOkAddSub:
             #    logging.info("subcribe 대기")
@@ -270,14 +270,17 @@ class Mqtt:
         self.logger = logger
 
     def ready(self, _host, _port, _edgeid, _edgety, _topic_subs_base, _pub_init_topic, _pub_edgenode_topic):
-        self.edgeid = _edgeid
+        self.edgeId = _edgeid
         self.edgeTy = _edgety
         self.host = _host
         self.port = _port
         self.TOPIC_SUBS_BASE = _topic_subs_base
         self.PUB_INIT_TOPIC = _pub_init_topic
-        self.PUB_EDGENODE_TOPIC = _pub_edgenode_topic + "/" + self.edgeid
-
+        self.PUB_EDGENODE_TOPIC = _pub_edgenode_topic + "/" + self.edgeId
+        self.data_received = {
+            'vehicle': False,
+            'status': False
+        }
     def start(self, subcribes, retry=False):   
         try:
             # 콜백 함수 설정 on_connect(브로커에 접속), on_disconnect(브로커에 접속중료), on_publish(메세지 발행)
@@ -336,8 +339,59 @@ class Mqtt:
     def on_subscribe(self, client, userdata, mid, granted_qos):
         logging.info("In on_subscribe: " + str(mid) + " " + str(granted_qos))
 
-        self.notOkAddSub = False
+        self.notOkAddSub = False   
+        
+    def data_merge(self):
+        if not (self.data_received['vehicle'] and self.data_received['status']):
+            return None
+            
+        now = datetime.datetime.now()
+        header_repack = dict()
 
+        header_repack["cmd"] = str("rep")
+        header_repack["actn"] = str("vehicle")
+        header_repack["dtlActn"] = str("common")
+        header_repack["strtpnt"] = "N"
+        header_repack["dstn"] = "H"
+
+        header_repack["userId"] = ""
+        header_repack["edgeId"] = self.edgeId
+        header_repack["edgeTy"] = self.edgeTy
+
+        new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+        header_repack["timestamp"] = new_timestamp    
+        header_repack["command"] = "60320"
+        
+        if self.vehicle_data and self.status_data:
+            merge_message = dict()
+            merge_message = {**self.vehicle_data, **self.status_data}
+            
+            # 데이터 초기화
+            self.vehicle_data = {}
+            self.status_data = {}
+            self.data_received = {
+                'vehicle': False,
+                'status': False
+            }
+            
+            return merge_message
+        return None
+    
+    def process_message(self, msg_data):
+        try:
+            action = msg_data["header"]["actn"]
+            if action == "vehicle":
+                self.vehicle_data = msg_data["data"]
+                self.data_received['vehicle'] = True
+                logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
+            elif action == "status":
+                self.status_data = msg_data["data"]
+                self.data_received['status'] = True
+                logging.info(f"위치 정보 업데이트: {self.status_data}")
+        except KeyError as e:
+            logging.error(f"데이터 처리 중 오류 발생: {e}")
+        
+        
     def process_kafka_message(self, message):
         try:
             if not message.value():
@@ -356,25 +410,64 @@ class Mqtt:
             
             _cmd = msg_data["header"]["cmd"]
             _actn = msg_data["header"]["actn"]
-            # 메시지 JSON 문자열로 변환
-            send_message = json.dumps(msg_data, ensure_ascii=False)
+            _timestamp = msg_data["header"]["timestamp"]
+            _edgeId = msg_data["header"]["edgeId"]
+            json_message = dict()
+            
             print(f"_cmd: {_cmd}, _actn: {_actn}")
-            # 메시지 타입에 따라 적절한 토픽으로 발행
+            # 메시지 타입에 따라 mqtt발행
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
+                    self.process_message(msg_data)
+                    merged_data = self.data_merge()
+                    if merged_data:
+                        print("\n" + "="*50)
+                        print(f"📍 병합: {type(merged_data)}")
+                        print("="*50 + "\n")
+                    
+                    json_message["header"] = msg_data["header"]
+                    
+                    data_message = str(json.dumps(merged_data, ensure_ascii=False))
+                    
+                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
+                    
+                    json_message["data"] = str(send_data)
+                    
+                    send_message = json.dumps(json_message, ensure_ascii=False)
+                    
                     self.pubHub4Node(send_message)
-                elif _actn in ["alarm"]:
+                elif _actn == "alarm":
                     self.pubHub4Node(send_message)
-                elif _actn in ["globalpath"]:
+                elif _actn == "globalpath":
                     self.pubHub4Node(send_message)
-                elif _actn in ["tractor"]:
+                elif _actn == "tractor":
+                    json_message["header"] = msg_data["header"]
+                    
+                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
+                    
+                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
+                    
+                    json_message["data"] = str(send_data)
+                    
+                    send_message = json.dumps(json_message, ensure_ascii=False)
+                    
                     self.pubHub4Node(send_message)
-                elif _actn in ["cls"]:
+                elif _actn == "cls":
+                    json_message["header"] = msg_data["header"]
+                    
+                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
+                    
+                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
+                    
+                    json_message["data"] = str(send_data)
+                    
+                    send_message = json.dumps(json_message, ensure_ascii=False)
+                    
                     self.pubHub4Node(send_message)
             elif _cmd == "req":
-                if _actn in ["init"]:
+                if _actn == "init":
                     self.pubHub4Init(send_message)
-                elif _actn in ["globalpath"]:
+                elif _actn == "globalpath":
                     self.pubHub4Node(send_message)
             elif _cmd == "event":
                 self.pubHub4Node(send_message)

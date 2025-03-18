@@ -1,13 +1,12 @@
 from confluent_kafka import Consumer, KafkaError, KafkaException
 import json
-import pandas as pd
 from typing import Dict, Any
 import logging
 from GBUtil import GBUtil
 from SqliteController import SqliteController
 import datetime
 import time
-
+import random  
 
 # 로깅 설정
 logging.basicConfig(
@@ -30,6 +29,10 @@ class VehicleDataConsumer:
         self.edgeTy = None
         self.sqlitectrl = SqliteController("./sqlite_db/test.db")
         self.gbutil = GBUtil()
+        self.data_received = {
+            'vehicle': False,
+            'status': False
+        }
         
     def connect(self, topics: list):
         try:
@@ -38,9 +41,11 @@ class VehicleDataConsumer:
         except KafkaException as e:
             logging.error(f"Kafka 연결 실패: {e}")
             raise
+
     def data_merge(self):
-        
-        time.sleep(1)
+        if not (self.data_received['vehicle'] and self.data_received['status']):
+            return None
+            
         now = datetime.datetime.now()
         header_repack = dict()
 
@@ -54,40 +59,45 @@ class VehicleDataConsumer:
         header_repack["edgeId"] = self.edgeId
         header_repack["edgeTy"] = self.edgeTy
 
-        
         new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-
         header_repack["timestamp"] = new_timestamp    
         header_repack["command"] = "60320"
         
-                
-        
         if self.vehicle_data and self.status_data:
             json_message = dict()
-            
-            merge = {**self.vehicle_data,**self.status_data}
-            
+            merge = {**self.vehicle_data, **self.status_data}
             
             snake = self.gbutil.tosnake_dictname(merge)
             db_in_datas = self.gbutil.dictToSql(snake)
             db_in_datas['VEHICLE_ID'] = "\"" + self.edgeId + "\""
-            db_in_datas['VEHICLE_TYPE'] = "\"" +  + "\""
+            db_in_datas['VEHICLE_TYPE'] = "\"" + self.edgeTy + "\""
             db_conditions = {'tablename': '"VEHICLE_ING_INFO"'}
             try:
                 result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)            
             except Exception as e:
                 print(e)
             
+            # 데이터 초기화
+            self.vehicle_data = {}
+            self.status_data = {}
+            self.data_received = {
+                'vehicle': False,
+                'status': False
+            }
+            
             return merge
+        return None
     
     def process_message(self, data: Dict[str, Any]):
         try:
             action = data["header"]["actn"]
             if action == "vehicle":
                 self.vehicle_data = data["data"]
+                self.data_received['vehicle'] = True
                 logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
             elif action == "status":
                 self.status_data = data["data"]
+                self.data_received['status'] = True
                 logging.info(f"위치 정보 업데이트: {self.status_data}")
         except KeyError as e:
             logging.error(f"데이터 처리 중 오류 발생: {e}")
@@ -113,15 +123,13 @@ class VehicleDataConsumer:
                     self.edgeId = data["header"]["edgeId"]
                     self.edgeTy = data["header"]["edgeTy"]
                     self.process_message(data)
-                    self.data_merge()
                     
-                    
-                    # 데이터 출력
-                    print("\n" + "="*50)
-                    #print(f"📍 차량정보: {self.vehicle_data}")
-                    #print(f"📍 로케이션: {self.status_data}")
-                    print(f"📍 병합: {self.data_merge()}")
-                    print("="*50 + "\n")
+                    # 두 데이터가 모두 수신되었을 때만 병합
+                    merged_data = self.data_merge()
+                    if merged_data:
+                        print("\n" + "="*50)
+                        print(f"📍 병합: {merged_data}")
+                        print("="*50 + "\n")
                     
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
@@ -135,7 +143,7 @@ class VehicleDataConsumer:
 if __name__ == "__main__":
     consumer = VehicleDataConsumer(
         bootstrap_servers='localhost:9092',
-        group_id='consumer_group_23'
+        group_id=random.randint(0, 100)
     )
-    consumer.connect(['shared_topic'])
+    consumer.connect(['rep'])
     consumer.run()
