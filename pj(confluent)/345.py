@@ -5,14 +5,72 @@ from SqliteController import SqliteController
 import random
 import logging
 from typing import Dict, Any
+import os
+from pathlib import Path
+import configparser
+from logging.handlers import TimedRotatingFileHandler
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG = Path(ROOT_DIR) / 'nodecommsrv.ini' # config.ini 설정
+logger = None
+file_encoding = 'utf-8'
+send_encoding = 'CP949'
+recv_encoding = 'CP949'
+
+
 
 # 로깅 설정
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+def create_rotating_log(path, _config):
+    _logger_level = _config['LOG_LEVEL']
+    _logger_when = _config['LOG_WHEN']
+    _logger_interval = _config['LOG_INTERVAL']
+    _logger_backupcount = _config['LOG_BACKUPCOUNT']
+
+    set_level = logging.INFO
+
+    if _logger_level == "INFO":
+        set_level = logging.INFO
+    elif _logger_level == "DEBUG":
+        set_level = logging.DEBUG
+    elif _logger_level == "NOTICE":
+        set_level = logging.NOTICE
+    elif _logger_level == "ERR":
+        set_level = logging.ERROR
+        
+    global logger
+    """
+    Creates a rotating log
+    """
+    logging.basicConfig(level=set_level, format='%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] %(message)s')
+    logger = logging.getLogger("")
+    logger.setLevel(set_level)
+
+    #print("_logger_level: {0}, _logger_backupcount:{1}, _logger_when: {2}".format(_logger_level, _logger_backupcount, _logger_when ));
+    
+    # add a rotating handler
+    """ 
+    handler = RotatingFileHandler(path, maxBytes=100000000,
+                                  backupCount=5)
+    """
+    handler = TimedRotatingFileHandler(path,
+                                       when=_logger_when,
+                                       interval=int(_logger_interval),
+                                       backupCount=int(_logger_backupcount),
+                                       encoding='utf-8')
+                                          
+    handler.suffix = "-%Y%m%d_%H-%M-%S"
+    
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] %(message)s' )    
+    handler.setFormatter(formatter)
+    
+    logger.addHandler(handler)
+
+
+def get_log():
+    return logger
 
 class StreetSweeperConsumer:
+    logger = get_log()
     def __init__(self, bootstrap_servers: str):
         self.group_id = random.randint(0, 100)
         self.consumer_config = {
@@ -27,7 +85,7 @@ class StreetSweeperConsumer:
     def connect(self, topics: list):
         try:
             self.consumer.subscribe(topics)
-            logging.info(f"🟢 Consumer 4 ({self.group_id}) 시작!")
+            logging.info(f"🟢 Consumer 2 ({self.group_id}) 시작!")
         except KafkaException as e:
             logging.error(f"Kafka 연결 실패: {e}")
             raise
@@ -88,6 +146,12 @@ class StreetSweeperConsumer:
             logging.info("Consumer 종료됨")
 
 if __name__ == "__main__":
+    
+    _config = configparser.ConfigParser()
+    _config.read(CONFIG, encoding=file_encoding) # definition.py에 등록된 config.ini
+    full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
+    create_rotating_log(full_path, _config['LOGGER'])    
+    
     consumer = StreetSweeperConsumer(bootstrap_servers='localhost:9092')
-    consumer.connect(['shared_topic'])
+    consumer.connect(['rep'])
     consumer.run()

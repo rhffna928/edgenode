@@ -13,7 +13,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 from logging.handlers import TimedRotatingFileHandler
 from constant import Constant
-
+import jpype
+import jpype.imports
+from jpype.types import *
+from multiprocessing import shared_memory
+import numpy as np
 
 client_sockets_1 = []
 client_sockets_2 = []
@@ -40,6 +44,31 @@ recv_encoding = 'CP949'
 producer_config = {'bootstrap.servers': 'localhost:9092'}
 producer = Producer(producer_config)
 
+jpype.startJVM()
+jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
+jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
+
+def sendDisconnectAll(client_sockets):
+    logger.info("모든 접속자와의 연결을 끊음")
+    msg = 'Disconnect'
+
+    for client in client_sockets:
+        conn = client[0]
+        conn.sendall(msg.encode())
+        conn.close()
+
+    client_sockets.clear()
+
+def sendAll(client_sockets, msg):
+    msg += '\r\n';
+
+    for client in client_sockets:        
+        conn = client[0]
+        conn.sendall(msg.encode(encoding=send_encoding))
+
+def sendString(conn, msg):
+    msg += '\r\n'
+    conn.sendall(msg.encode(encoding=send_encoding))
 
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
@@ -109,8 +138,6 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
         self.vehicle_info = None
         self.vehicle_location = None
-        #self.sqlitectrl = SqliteController("./nodetest.db")
-
         self.edgeId = None
         self.edgeTy = None
         self.userId = None
@@ -141,11 +168,14 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         recv_len = 1024
 
         client_sockets_1.append((conn, addr))
+        shm = shared_memory.SharedMemory(create=True, size=1024)
+        arr = np.ndarray((256,),dtype=np.int32, buffer=shm.buf)
+        arr[:] = np.arange(256)
         buf = ""
 
         #cur_thread = threading.current_thread()
         logging.info("특장차 접속 :  {}".format( self.client_address[0]))
-
+        logging.info("접속 특장차 데이터 타입 :  {}123 {}123 {}123 {}".format(type(self.request), self.request, type(self.client_address), self.client_address))
         while True:
             try:
                 data = conn.recv(recv_len).decode(encoding=recv_encoding)
@@ -230,14 +260,9 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 resheader["dstn"] = _dstn_res
                                 
                                 json_message["header"] = resheader
-                                
-                                #data_message = str(json.dumps(, ensure_ascii=False))
-                                
                                 json_message["data"] = res["data"]
-                                 
-                                send_message = json.dumps(json_message, ensure_ascii=False)
                                 send_kafka_msg('rep', message=json_message)
-
+                                
                             elif _cmd == "req":
                                 if _actn == "init":
                                     if _strtpnt == "M":
@@ -255,6 +280,31 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 json_message["data"] = res["data"]
                                  
                                 send_kafka_msg('req', message=json_message)
+                                if _actn == "globalpath":
+                                    if _dtlActn == "planwrite":
+                                        json_message_edge = dict()
+
+                                        json_message_edge["command"] = edge_command
+                                        json_message_edge["VID"] = _edgeId
+                                        json_message_edge["timestamp"] = _timestamp
+                                        json_message_edge["edgeTy"] = _edgeTy
+
+                                        data_message = str(json.dumps(res["data"], ensure_ascii=False))
+                                        start_time = time.time()
+                                        data_message = jvm_msg_encrypt_class.encode(_timestamp, str(data_message))
+                                        send_data = jvm_msg_encrypt_class.decode(_timestamp, data_message)
+                                        end_time = time.time()
+                                        execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
+                                        logging.info("#1 DATA 인/디코드 실행 시간: {0}ms".format(execution_time))
+                                        
+                                        if send_data == "":
+                                            json_message_edge["data"] = ""
+                                        else:
+                                            json_message_edge["data"] = json.loads(str(send_data), strict=True)
+                                        
+                                        send_message = json.dumps(json_message_edge, ensure_ascii=False)
+                                        sendAll(client_sockets_1, send_message)
+                                        logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                             elif _cmd == "event":
                                 resheader["cmd"] = _cmd_req
                                 resheader["strtpnt"] = _strtpnt_res
