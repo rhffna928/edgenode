@@ -259,16 +259,16 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             send_direction = Constant.NONE
                             
                             logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
-                            
+
                             if _cmd == "rep":
                                 resheader["cmd"] = _cmd_req
                                 resheader["strtpnt"] = _strtpnt_res
                                 resheader["dstn"] = _dstn_res
-                                
+
                                 json_message["header"] = resheader
                                 json_message["data"] = res["data"]
                                 send_kafka_msg('rep', message=json_message)
-                                
+
                             elif _cmd == "req":
                                 if _actn == "init":
                                     if _strtpnt == "M":
@@ -280,11 +280,11 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 resheader["strtpnt"] = _strtpnt_res
                                 resheader["dstn"] = _dstn_res
                                 resheader["edgeId"] = _edgeId
-                                
+
                                 json_message["header"] = resheader
-                                
+
                                 json_message["data"] = res["data"]
-                                 
+
                                 send_kafka_msg('req', message=json_message)
                                 #if _actn == "globalpath":
                                     # if _dtlActn == "planwrite":
@@ -314,13 +314,13 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 resheader["cmd"] = _cmd_req
                                 resheader["strtpnt"] = _strtpnt_res
                                 resheader["dstn"] = _dstn_res
-                                
+
                                 json_message["header"] = resheader
-                                
+
                                 json_message["data"] = res["data"]
-                                 
+
                                 send_kafka_msg('event', message=json_message)
-                                
+
                             elif _cmd == "heartbeat":
                                 send_kafka_msg('heartbeat', message=res_repack)
 
@@ -412,11 +412,11 @@ if __name__ == "__main__":
     _pub_init_topic = _config['MQTT']['PUB_INIT_TOPIC']
     _pub_edgenode_topic = _config['MQTT']['PUB_EDGENODE_TOPIC']
 
-    _edgeid = _config['APP']['EDGEID'] 
-    _edgety = _config['APP']['EDGETY'] 
+    #_edgeid = _config['APP']['EDGEID'] 
+    #_edgety = _config['APP']['EDGETY'] 
     
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
-    create_rotating_log(full_path, _config['LOGGER'])    
+    create_rotating_log(full_path, _config['LOGGER'])
     
     HOST1, PORT1 = _host1, _port1
     try:

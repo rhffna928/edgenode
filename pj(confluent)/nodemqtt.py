@@ -171,7 +171,7 @@ class Mqtt:
             _header["strtpnt"] = "N"
             _header["dstn"] = "H"
             _header["edgeId"] = self.edgeId
-            _header["userId"] = ""
+            _header["userId"] = "1"
             _header["command"] = "00001"
             _header["edgeTy"] = self.edgeTy
             _header["timestamp"] = now_str
@@ -422,6 +422,7 @@ class Mqtt:
                             send_direction = Constant.EDGE_EDGEHUB
                             ret_data = dict({'resultCd': 0, 'resultMssage': "globalpath write 성공"})   
                             resdata_string = str(ret_data)
+                            
                             send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, resdata_string)
                             resdata = str(send_data)
                             decoded_data = jvm_msg_encrypt_class.decode(_timestamp, reqdata)
@@ -582,6 +583,13 @@ class Mqtt:
                     send_message = json.dumps(json_message, ensure_ascii=False)                    
                     self.pubHub4Node(send_message)
                 elif _actn == "alarm":
+                    json_message["header"] = msg_data["header"]                
+                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
+                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
+                    json_message["data"] = str(send_data)                    
+                    send_message = json.dumps(json_message, ensure_ascii=False)         
+                    self.pubHub4Node(send_message)
+                elif _actn == "event":
                     json_message["header"] = msg_data["header"]                
                     data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
                     send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    

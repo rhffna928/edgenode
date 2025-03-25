@@ -8,7 +8,7 @@ from datetime import datetime
 
 # JVM 시작
 jpype.startJVM()
-jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
+jpype.addClassPath("../watosysEncrypt_not_otp_v1.0.0.jar")
 jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
 # 설정
 HOST = '172.30.1.20'  # 서버 IP
