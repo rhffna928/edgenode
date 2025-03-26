@@ -13,12 +13,12 @@ from constant import Constant
 import jpype
 import jpype.imports
 from jpype.types import *
-from confluent_kafka import Consumer, KafkaError, KafkaException
+from confluent_kafka import Consumer, KafkaError, Producer
 import threading
-from soc import MyTCPHandler1
 
 client_sockets_1 = []
 client_sockets_2 = []
+
 mqtt = None
 g_work_info = None
 command_tbl = None
@@ -34,7 +34,10 @@ logger = None
 file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
-print(MyTCPHandler1)
+
+# Kafka Producer 설정
+producer_config = {'bootstrap.servers': 'localhost:9092'}
+producer = Producer(producer_config)
 # Kafka Consumer 설정
 consumer_config = {
     'bootstrap.servers': '172.30.1.20:9092',
@@ -63,12 +66,21 @@ def sendAll(client_sockets, msg):
     msg += '\r\n'
     for client in client_sockets:        
         conn = client[0]
-        conn.sendall(msg.encode(encoding=send_encoding))
+        try:
+            conn.sendall(msg.encode(encoding=send_encoding))
+            logging.info(f"메시지 전송 성공: {client[1]}")  # 전송 성공 로그
+        except Exception as e:
+            logging.error(f"메시지 전송 실패: {client[1]}, 오류: {e}")  # 전송 실패 로그
 
 def sendString(conn, msg):
     msg += '\r\n'
     conn.sendall(msg.encode(encoding=send_encoding))
 
+def send_kafka_msg(topic, message):
+    #카프카 메시지 전송
+    producer.produce(topic, value=json.dumps(message).encode('utf-8'))
+    logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
+    
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
     _logger_when = _config['LOG_WHEN']
@@ -136,7 +148,12 @@ class Mqtt:
             client_mqtt = self.client = mqtt_client.Client()
 
     def __del__(self):
-        jpype.shutdownJVM()
+        try:
+            if jpype.isJVMStarted():
+                jpype.shutdownJVM()
+        except Exception as e:
+            print(f"JVM 종료 중 오류 발생: {e}")
+
 
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:
@@ -154,7 +171,7 @@ class Mqtt:
             _header["strtpnt"] = "N"
             _header["dstn"] = "H"
             _header["edgeId"] = self.edgeId
-            _header["userId"] = ""
+            _header["userId"] = "1"
             _header["command"] = "00001"
             _header["edgeTy"] = self.edgeTy
             _header["timestamp"] = now_str
@@ -195,9 +212,10 @@ class Mqtt:
 
         logging.info("Reconnect failed after %s attempts. Exiting...", reconnect_count)
 
+
     def pubHub4Init(self, send_message):
         self.publish(self.client, self.PUB_INIT_TOPIC, send_message)
-
+        
     def pubHub4Node(self, send_message):
         self.publish(self.client, self.PUB_EDGENODE_TOPIC, send_message)
 
@@ -269,7 +287,7 @@ class Mqtt:
     def on_message(self, client, userdata, message):
         global g_work_info
         self.onmessage_topic = message.topic
-
+            
         try:
             message = str(message.payload.decode(recv_encoding))
         except UnicodeDecodeError as err:
@@ -314,8 +332,9 @@ class Mqtt:
             return
 
         logging.info("MQTT 메시지 수신 : on topic: {0}  헤더 : {1} {2} {3} {4} {5} {6} {7} \n {8}".format(self.onmessage_topic, _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId, json.dumps(res, ensure_ascii=False, indent=3)))
-
+        #N
         _strtpnt_res = _dstn
+        #H
         _dstn_res = _strtpnt
 
         topic_define = self.PUB_EDGENODE_TOPIC.replace("#", '')
@@ -375,7 +394,7 @@ class Mqtt:
                     resdata4edge = res["data"]
                 elif _cmd == "req":
                     reqdata = res["data"]
-
+                    
                     if _actn == "tractor":
                         _cmd_req = "res"
 
@@ -403,6 +422,7 @@ class Mqtt:
                             send_direction = Constant.EDGE_EDGEHUB
                             ret_data = dict({'resultCd': 0, 'resultMssage': "globalpath write 성공"})   
                             resdata_string = str(ret_data)
+                            
                             send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, resdata_string)
                             resdata = str(send_data)
                             decoded_data = jvm_msg_encrypt_class.decode(_timestamp, reqdata)
@@ -462,8 +482,9 @@ class Mqtt:
                     json_message_edge["data"] = json.loads(str(send_data), strict=True)
                 
                 send_message = json.dumps(json_message_edge, ensure_ascii=False)
-
-                sendAll(client_sockets_1, send_message)
+                #print(f"client_sockets_1############# : {client_sockets_1}")
+                #sendAll(client_sockets_1, send_message)
+                send_kafka_msg("connect", send_message)
                 logging.info("#1-2 edge로 보낼 메시지 {0}->{1}\n {2}".format(_strtpnt_res, _dstn_res, send_message))
 
             except TypeError as err:
@@ -525,15 +546,15 @@ class Mqtt:
         try:
             if not message.value():
                 return False
-            
             try:
                 msg_data = json.loads(message.value().decode('utf-8'))
+                print(f"msg_data : {msg_data}")
             except json.JSONDecodeError:
                 logging.error("JSON 디코딩 실패")
                 return False
             
             if not isinstance(msg_data, dict):
-                logging.error("메시지 형식이 올바르지 않습니다.")
+                logging.error(f"메시지 형식이 올바르지 않습니다.{message.topic()}")
                 return False
             
             _cmd = msg_data["header"]["cmd"]
@@ -562,6 +583,13 @@ class Mqtt:
                     send_message = json.dumps(json_message, ensure_ascii=False)                    
                     self.pubHub4Node(send_message)
                 elif _actn == "alarm":
+                    json_message["header"] = msg_data["header"]                
+                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
+                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
+                    json_message["data"] = str(send_data)                    
+                    send_message = json.dumps(json_message, ensure_ascii=False)         
+                    self.pubHub4Node(send_message)
+                elif _actn == "event":
                     json_message["header"] = msg_data["header"]                
                     data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
                     send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
@@ -600,19 +628,12 @@ class Mqtt:
 
                     sendAll(client_sockets_1, send_message)
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
-                elif _actn == "tractor":
+                elif _actn in ["tractor", "cls"]:
                     json_message["header"] = msg_data["header"]                
                     data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
                     send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
                     json_message["data"] = str(send_data)                    
                     send_message = json.dumps(json_message, ensure_ascii=False)                    
-                    self.pubHub4Node(send_message)
-                elif _actn == "cls":
-                    json_message["header"] = msg_data["header"]
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
-                    json_message["data"] = str(send_data)
-                    send_message = json.dumps(json_message, ensure_ascii=False)
                     self.pubHub4Node(send_message)
             elif _cmd == "req":
                 if _actn == "init":
@@ -635,10 +656,10 @@ class Mqtt:
                 send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
                 json_message["data"] = str(send_data)
                 send_message = json.dumps(json_message, ensure_ascii=False)
-                self.pubHub4Node(msg_data)
+                self.pubHub4Node(send_message)
             elif _cmd == "heartbeat":
-                json_message["header"] = msg_data["header"]
-                self.pubHub4Node(msg_data)
+                send_message = json.dumps(msg_data, ensure_ascii=False)
+                self.pubHub4Node(send_message)
             return True
         except Exception as e:
             logging.error(f"메시지 처리 중 오류 발생: {str(e)}")
