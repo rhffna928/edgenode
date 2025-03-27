@@ -7,19 +7,15 @@ import time
 import json
 import time
 import datetime
-
 import threading
 import socket
 import paho.mqtt.client as mqtt_client
-
 from pathlib import Path
-
 import configparser
-
 import logging
 from logging.handlers import RotatingFileHandler
 from logging.handlers import TimedRotatingFileHandler
-
+from confluent_kafka import Producer
 from constant import Constant
 
 # java jar 임포트
@@ -59,6 +55,14 @@ jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
 # 자바 클래스 로드
 jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
 #jvm_aes_class = jpype.JClass("watosys.utils.eg.encrypt.AES")
+
+producer_config = {'bootstrap.servers': 'localhost:9092'}
+producer = Producer(producer_config)
+
+def send_kafka_msg(topic, message):
+    #카프카 메시지 전송
+    producer.produce(topic, value=json.dumps(message).encode('utf-8'))
+    
 
 def sendDisconnectAll(client_sockets):
     logger.info("모든 접속자와의 연결을 끊음")
@@ -270,13 +274,13 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                             
                             if _actn == "init":
                                 data_message = str(res["data"])        
-                                decoded_data = jvm_msg_encrypt_class.decode(_timestamp, data_message)
+                                #decoded_data = jvm_msg_encrypt_class.decode(_timestamp, data_message)
 
                                 objheader = res["header"]
                                 
                                 obj = dict()
                                 obj["header"] = objheader
-                                obj["data"] = decoded_data
+                                obj["data"] = data_message
 
                                 logging.info("================== {0}".format(obj))
                                 _userId = str(objheader["userId"])
@@ -295,8 +299,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                                     _resultCd = 0
                                     _resultMssage = "init 성공"
 
-                                resdata = dict({'resultCd': _resultCd, 'resultMssage': _resultMssage, 'userId':_userId, 'edgeList':db_edgeList})   
-                                json_message["data"] = resdata
+                                resdata = dict({'resultCd': _resultCd, 'resultMssage': _resultMssage, 'userId':_userId, 'edgeList':db_edgeList})
                             elif _actn == "alarm":
                                 if _dtlActn == "list":
                                     _resultMssage = _actn + " " + _dtlActn + " 성공"
@@ -317,9 +320,10 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                         resheader["strtpnt"] = _strtpnt_res
                         resheader["dstn"] = _dstn_res
                         resheader["edgeId"] = _edgeId
-                        resheader["userId"] = _userId
+                        resheader["userId"] = _edgeid
                         resheader["timestamp"] = _timestamp
-
+                        resheader["command"] = "05421"
+                        
                         json_message["header"] = resheader
                         json_message["data"] = resdata
 
@@ -327,6 +331,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                         if send_direction == Constant.MOBILESOCK1:
                             #sendAll(client_sockets_1, send_message)
+                            send_kafka_msg('connect',send_message)
                             pass
                         elif send_direction == Constant.MOBILESOCK2:
                             sendAll(client_sockets_2, send_message)
@@ -337,7 +342,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                             send_message2 = json.dumps(json_message2, ensure_ascii=False)
 
-                            mqtt.pubHub4Node(send_message2)
+                            send_kafka_msg('event',json_message2)
 
                     except json.decoder.JSONDecodeError as err:
                         logging.exception("json.decoder.JSONDecodeError %s", err)

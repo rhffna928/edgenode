@@ -28,14 +28,17 @@ def receive_data(conn):
         if data["data"] == "":
             data["data"] = ""
         else:
-            data = jvm_msg_encrypt_class.decode(now_str,data["data"])
+            decoded_data = jvm_msg_encrypt_class.decode(now_str,data["data"])
         # JSON 파싱
         try:
             print(f"🔍 파싱된 데이터:")
-            print(f"  - command: {data.get('command')}")
-            print(f"  - VID: {data.get('VID')}")
-            print(f"  - timestamp: {data.get('timestamp')}")
-            print(f"  - data: {data.get('data')}")
+            print(f"  - command: {data['header']['cmd']}")
+            print(f"  - action: {data['header']['actn']}")
+            print(f"  - dtlActn: {data['header']['dtlActn']}")
+            print(f"  - strtpnt: {data['header']['strtpnt']}")
+            print(f"  - dstn: {data['header']['dstn']}")
+            print(f"  - edgeId: {data['header']['edgeId']}")
+            print(f"  - data: {decoded_data}")
         except json.JSONDecodeError:
             print("❌ JSON 파싱 실패")
             

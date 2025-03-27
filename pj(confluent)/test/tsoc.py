@@ -43,10 +43,10 @@ recv_encoding = 'CP949'
 
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "daa-kafka1:19092")
 
-producer_config = {'bootstrap.servers': KAFKA_BROKER}
+producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
 producer = Producer(producer_config)
 
-consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
+consumer_config = {'bootstrap.servers': '172.30.1.20:9092', 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
 consumer = Consumer(consumer_config)
 consumer.subscribe(['connect'])
 

@@ -36,7 +36,7 @@ send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
 # Kafka Producer 설정
-producer_config = {'bootstrap.servers': 'localhost:9092'}
+producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
 producer = Producer(producer_config)
 # Kafka Consumer 설정
 consumer_config = {
