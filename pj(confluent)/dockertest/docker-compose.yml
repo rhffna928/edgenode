@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  tsoc:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+    ports:
+      - "5000:5000"
+    networks:
+      - docker-kafka_daa-kafka-cluster-network      
+    environment:
+      - KAFKA_BROKER=172.30.1.20:9092
+      - ZOOKEEPER_CONNECT=localhost:2888
+      - TZ=Asia/Seoul
+    command: python3 tsoc.py
+
+  vehi:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+      - ./sqlite_db:/app/sqlite_db
+    networks:
+      - docker-kafka_daa-kafka-cluster-network      
+    environment:
+      - KAFKA_BROKER=172.30.1.20:9092
+      - ZOOKEEPER_CONNECT=localhost:2888
+      - TZ=Asia/Seoul
+    command: python3 vehi.py
+    depends_on:
+      - tsoc
+  trac:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+      - ./sqlite_db:/app/sqlite_db
+    networks:
+      - docker-kafka_daa-kafka-cluster-network      
+    environment:
+      - KAFKA_BROKER=172.30.1.20:9092
+      - ZOOKEEPER_CONNECT=localhost:2888
+      - TZ=Asia/Seoul
+    command: python3 trac.py
+    depends_on:
+      - tsoc
+  mqtt:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - docker-kafka_daa-kafka-cluster-network      
+    environment:
+      - KAFKA_BROKER=172.30.1.20:9092
+      - ZOOKEEPER_CONNECT=localhost:2888
+      - TZ=Asia/Seoul
+    command: python3 nodemqtt.py
+    depends_on:
+      - tsoc
+      
+networks:
+  docker-kafka_daa-kafka-cluster-network:
+    external: true

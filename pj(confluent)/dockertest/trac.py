@@ -17,8 +17,6 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-
-
 # 로깅 설정
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
@@ -69,14 +67,19 @@ def create_rotating_log(path, _config):
 def get_log():
     return logger
 
-class StreetSweeperConsumer:
+class TractorConsumer:
     logger = get_log()
     def __init__(self, bootstrap_servers: str):
         self.group_id = random.randint(0, 100)
         self.consumer_config = {
             'bootstrap.servers': bootstrap_servers,
             'group.id': self.group_id,
-            'auto.offset.reset': 'latest'
+            'auto.offset.reset': 'latest',
+            'enable.auto.commit': True,
+            'auto.commit.interval.ms': 5000,
+            'session.timeout.ms': 10000,
+            'heartbeat.interval.ms': 3000,
+            'max.poll.interval.ms': 300000
         }
         self.consumer = Consumer(self.consumer_config)
         self.gbutil = GBUtil()
@@ -85,24 +88,24 @@ class StreetSweeperConsumer:
     def connect(self, topics: list):
         try:
             self.consumer.subscribe(topics)
-            logging.info(f"!!!!!!!!!!!!!!!!!!!CLS Consumer ({self.group_id}) 시작")
+            logging.info(f"!!!!!!!!!!!!!!!!!!!Tractor Consumer ({self.group_id}) 시작")
         except KafkaException as e:
             logging.error(f"Kafka 연결 실패: {e}")
             raise
 
-    def process_cls_data(self, data: Dict[str, Any]) -> bool:
+    def process_trc_data(self, data: Dict[str, Any]) -> bool:
         try:
             snake = self.gbutil.tosnake_dictname(data["data"])
             logging.debug(f"변환된 snake case 데이터: {snake}")
             
             db_in_datas = self.gbutil.dictToSql(snake)
             db_in_datas['VEHICLE_ID'] = f"\"{data['header']['edgeId']}\""
-            db_conditions = {'tablename': '"STREET_SWEEPER_INFO"'}
+            db_conditions = {'tablename': '"TRACTOR_INFO"'}
             
             logging.debug(f"DB 입력 데이터: {db_in_datas}")
             try:
                 result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)
-                logging.info(f"cls 데이터 처리 성공: {result}")
+                logging.info(f"trac 데이터 처리 성공: {result}")
                 return result
             except Exception as e:
                 logging.error(f"데이터 처리 중 오류 발생: {e}")
@@ -130,9 +133,9 @@ class StreetSweeperConsumer:
                 try:
                     data = json.loads(msg.value())
                     
-                    if data["header"]["actn"] == "cls":
-                        result = self.process_cls_data(data)
-                    
+                    if data["header"]["actn"] == "tractor":
+                        self.process_trc_data(data)
+                    self.consumer.commit()
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
                 
@@ -149,6 +152,6 @@ if __name__ == "__main__":
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])    
     
-    consumer = StreetSweeperConsumer(bootstrap_servers='localhost:9092')
+    consumer = TractorConsumer(bootstrap_servers='172.30.1.20:9092')
     consumer.connect(['rep'])
     consumer.run()

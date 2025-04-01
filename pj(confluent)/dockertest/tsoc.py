@@ -43,10 +43,19 @@ recv_encoding = 'CP949'
 
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "daa-kafka1:19092")
 
-producer_config = {'bootstrap.servers': KAFKA_BROKER}
+producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
 producer = Producer(producer_config)
 
-consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
+consumer_config = {
+    'bootstrap.servers': '172.30.1.20:9092',
+    'group.id': os.getpid(),
+    'auto.offset.reset': 'latest',
+    'enable.auto.commit': True,
+    'auto.commit.interval.ms': 5000,
+    'session.timeout.ms': 10000,
+    'heartbeat.interval.ms': 3000,
+    'max.poll.interval.ms': 300000
+}
 consumer = Consumer(consumer_config)
 consumer.subscribe(['connect'])
 
@@ -84,7 +93,7 @@ def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
     
-    #logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
+    logging.info(f"########################카프카 {topic}전송")
 
 
 def create_rotating_log(path, _config):
@@ -197,7 +206,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                     continue
                 else:
                     with self.lock: 
-                        now = datetime.datetime.now()
+                        
                         data = buf[0:index +2]
                         data = data.replace("\r\n", '')
                         buf = data.replace(data, '')
@@ -247,9 +256,10 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             _edgeId = str(res_repack["header"]["edgeId"])
                             _edgeTy = str(res_repack["header"]["edgeTy"])
                             _timestamp = str(res_repack["header"]["timestamp"])
+                            now = datetime.datetime.now()
                             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')                        
                             delay_time = (now - start_time).total_seconds() * 1000 # 밀리세컨드 단위로 변환
-                            logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time: {0}ms, ({1} - {2})".format(round(delay_time,4), now, start_time))
+                            logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time: {0}ms, ({1} - {2})".format(round((delay_time),4), now, start_time))
 
                             _cmd_req = _cmd
                             _strtpnt_res = _dstn
@@ -381,6 +391,7 @@ def start_kafka_consumer():
             try: 
                 msg_value = json.loads(msg.value().decode('utf-8'))
                 sendAll(client_sockets_1, msg_value)
+                consumer.commit()
                 logging.info(f"특장차 메시지 전송 완료: {msg_value}")
             except json.JSONDecodeError as e:
                 logging.error(f"JSON 디코드 오류: {e}")

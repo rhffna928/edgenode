@@ -79,7 +79,7 @@ def sendString(conn, msg):
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
-    logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
+    
     
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
@@ -459,10 +459,10 @@ class Mqtt:
 
         elif send_direction == Constant.EDGE or send_direction == Constant.EDGE_EDGEHUB:
             json_message_edge = dict()
-            json_message_edge["command"] = _command
-            json_message_edge["VID"] = _edgeId
-            json_message_edge["timestamp"] = _timestamp
-            json_message_edge["edgeTy"] = _edgeTy
+            json_message_edge["header"]["command"] = _command
+            json_message_edge["header"]["VID"] = _edgeId
+            json_message_edge["header"]["timestamp"] = _timestamp
+            json_message_edge["header"]["edgeTy"] = _edgeTy
 
             try:
                 data_message = resdata4edge
@@ -660,6 +660,10 @@ class Mqtt:
             elif _cmd == "heartbeat":
                 send_message = json.dumps(msg_data, ensure_ascii=False)
                 self.pubHub4Node(send_message)
+            elif _cmd == "cmd":
+                if _actn == "power":
+                    send_message = json.dumps(msg_data, ensure_ascii=False)
+                    self.pubHub4Node(send_message)
             return True
         except Exception as e:
             logging.error(f"메시지 처리 중 오류 발생: {str(e)}")
