@@ -17,8 +17,6 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-
-
 # 로깅 설정
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']

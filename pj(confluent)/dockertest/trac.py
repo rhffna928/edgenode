@@ -1,16 +1,14 @@
 from confluent_kafka import Consumer, KafkaError, KafkaException
 import json
-from typing import Dict, Any
-import logging
 from GBUtil import GBUtil
 from SqliteController import SqliteController
-import datetime
-import time
-import random  
-from logging.handlers import TimedRotatingFileHandler
+import random
+import logging
+from typing import Dict, Any
 import os
 from pathlib import Path
 import configparser
+from logging.handlers import TimedRotatingFileHandler
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG = Path(ROOT_DIR) / 'nodecommsrv.ini' # config.ini 설정
@@ -18,6 +16,7 @@ logger = None
 file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
+
 # 로깅 설정
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
@@ -67,97 +66,54 @@ def create_rotating_log(path, _config):
 
 def get_log():
     return logger
-class VehicleDataConsumer:
+
+class TractorConsumer:
     logger = get_log()
-    
     def __init__(self, bootstrap_servers: str):
-        self.group_id = random.randint(0,100)
+        self.group_id = random.randint(0, 100)
         self.consumer_config = {
             'bootstrap.servers': bootstrap_servers,
             'group.id': self.group_id,
-            'auto.offset.reset': 'latest'
+            'auto.offset.reset': 'latest',
+            'enable.auto.commit': True,
+            'auto.commit.interval.ms': 5000,
+            'session.timeout.ms': 10000,
+            'heartbeat.interval.ms': 3000,
+            'max.poll.interval.ms': 300000
         }
-        
         self.consumer = Consumer(self.consumer_config)
-        self.vehicle_data = {}
-        self.status_data = {}
-        self.edgeId = None
-        self.edgeTy = None
-        self.sqlitectrl = SqliteController("./sqlite_db/test.db")
         self.gbutil = GBUtil()
-        self.data_received = {
-            'vehicle': False,
-            'status': False
-        }
-        
+        self.sqlitectrl = SqliteController("./sqlite_db/test.db")
+
     def connect(self, topics: list):
         try:
             self.consumer.subscribe(topics)
-            
-            logging.info(f"🟢 Consumer 1({self.consumer_config['group.id']}) 시작!")
+            logging.info(f"!!!!!!!!!!!!!!!!!!!Tractor Consumer ({self.group_id}) 시작")
         except KafkaException as e:
             logging.error(f"Kafka 연결 실패: {e}")
             raise
 
-    def data_merge(self):
-        if not (self.data_received['vehicle'] and self.data_received['status']):
-            return None
-            
-        now = datetime.datetime.now()
-        header_repack = dict()
-
-        header_repack["cmd"] = str("rep")
-        header_repack["actn"] = str("vehicle")
-        header_repack["dtlActn"] = str("common")
-        header_repack["strtpnt"] = "N"
-        header_repack["dstn"] = "H"
-
-        header_repack["userId"] = ""
-        header_repack["edgeId"] = self.edgeId
-        header_repack["edgeTy"] = self.edgeTy
-
-        new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-        header_repack["timestamp"] = new_timestamp    
-        header_repack["command"] = "60320"
-        
-        if self.vehicle_data and self.status_data:
-            json_message = dict()
-            merge = {**self.vehicle_data, **self.status_data}
-            
-            snake = self.gbutil.tosnake_dictname(merge)
-            db_in_datas = self.gbutil.dictToSql(snake)
-            db_in_datas['VEHICLE_ID'] = "\"" + self.edgeId + "\""
-            db_in_datas['VEHICLE_TYPE'] = "\"" + self.edgeTy + "\""
-            db_conditions = {'tablename': '"VEHICLE_ING_INFO"'}
-            try:
-                result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)            
-            except Exception as e:
-                print(e)
-            
-            # 데이터 초기화
-            self.vehicle_data = {}
-            self.status_data = {}
-            self.data_received = {
-                'vehicle': False,
-                'status': False
-            }
-            
-            return merge
-        return None
-    
-    def process_message(self, data: Dict[str, Any]):
+    def process_trc_data(self, data: Dict[str, Any]) -> bool:
         try:
-            action = data["header"]["actn"]
-            if action == "vehicle":
-                self.vehicle_data = data["data"]
-                self.data_received['vehicle'] = True
-                logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
-            elif action == "status":
-                self.status_data = data["data"]
-                self.data_received['status'] = True
-                logging.info(f"위치 정보 업데이트: {self.status_data}")
-        except KeyError as e:
+            snake = self.gbutil.tosnake_dictname(data["data"])
+            logging.debug(f"변환된 snake case 데이터: {snake}")
+            
+            db_in_datas = self.gbutil.dictToSql(snake)
+            db_in_datas['VEHICLE_ID'] = f"\"{data['header']['edgeId']}\""
+            db_conditions = {'tablename': '"TRACTOR_INFO"'}
+            
+            logging.debug(f"DB 입력 데이터: {db_in_datas}")
+            try:
+                result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)
+                logging.info(f"trac 데이터 처리 성공: {result}")
+                return result
+            except Exception as e:
+                logging.error(f"데이터 처리 중 오류 발생: {e}")
+                return False
+            
+        except Exception as e:
             logging.error(f"데이터 처리 중 오류 발생: {e}")
+            return False
 
     def run(self):
         try:
@@ -177,17 +133,9 @@ class VehicleDataConsumer:
                 try:
                     data = json.loads(msg.value())
                     
-                    self.edgeId = data["header"]["edgeId"]
-                    self.edgeTy = data["header"]["edgeTy"]
-                    self.process_message(data)
-                    
-                    # 두 데이터가 모두 수신되었을 때만 병합
-                    merged_data = self.data_merge()
-                    if merged_data:
-                        print("\n" + "="*50)
-                        print(f"📍 병합: {merged_data}")
-                        print("="*50 + "\n")
-                    
+                    if data["header"]["actn"] == "tractor":
+                        self.process_trc_data(data)
+                    self.consumer.commit()
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
                 
@@ -198,13 +146,12 @@ class VehicleDataConsumer:
             logging.info("Consumer 종료됨")
 
 if __name__ == "__main__":
-        
+    
     _config = configparser.ConfigParser()
     _config.read(CONFIG, encoding=file_encoding) # definition.py에 등록된 config.ini
-    
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
-    create_rotating_log(full_path, _config['LOGGER'])
-
-    consumer = VehicleDataConsumer(bootstrap_servers='172.30.1.20:9092')
+    create_rotating_log(full_path, _config['LOGGER'])    
+    
+    consumer = TractorConsumer(bootstrap_servers='172.30.1.20:9092')
     consumer.connect(['rep'])
     consumer.run()

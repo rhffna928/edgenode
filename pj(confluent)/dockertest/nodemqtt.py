@@ -39,11 +39,16 @@ recv_encoding = 'CP949'
 producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
 producer = Producer(producer_config)
 # Kafka Consumer 설정
+
 consumer_config = {
     'bootstrap.servers': '172.30.1.20:9092',
-    'group.id': random.randint(0, 100),
+    'group.id': f'mqtt_consumer_{os.getpid()}',  # 프로세스 ID 기반 그룹 ID
     'auto.offset.reset': 'latest',
-    'enable.auto.commit': False
+    'enable.auto.commit': True,
+    'auto.commit.interval.ms': 5000,
+    'session.timeout.ms': 10000,
+    'heartbeat.interval.ms': 3000,
+    'max.poll.interval.ms': 300000
 }
 consumer = Consumer(consumer_config)
 consumer.subscribe(['rep', 'req', 'event', 'heartbeat'])
@@ -459,10 +464,11 @@ class Mqtt:
 
         elif send_direction == Constant.EDGE or send_direction == Constant.EDGE_EDGEHUB:
             json_message_edge = dict()
-            json_message_edge["header"]["command"] = _command
-            json_message_edge["header"]["VID"] = _edgeId
-            json_message_edge["header"]["timestamp"] = _timestamp
-            json_message_edge["header"]["edgeTy"] = _edgeTy
+            resheader["command"] = _command
+            resheader["VID"] = _edgeId
+            resheader["timestamp"] = _timestamp
+            resheader["edgeTy"] = _edgeTy
+            json_message_edge["header"] = resheader
 
             try:
                 data_message = resdata4edge
@@ -493,6 +499,7 @@ class Mqtt:
                 logging.exception("%s. ", err)
             
     def data_merge(self):
+
         if not (self.data_received['vehicle'] and self.data_received['status']):
             return None
             
@@ -514,8 +521,7 @@ class Mqtt:
         header_repack["command"] = "60320"
         
         if self.vehicle_data and self.status_data:
-            merge_message = dict()
-            merge_message = {**self.vehicle_data, **self.status_data}
+            header_repack["data"] = {**self.vehicle_data, **self.status_data}
             
             # 데이터 초기화
             self.vehicle_data = {}
@@ -525,7 +531,7 @@ class Mqtt:
                 'status': False
             }
             
-            return merge_message
+            return header_repack
         return None
 
     def process_message(self, msg_data):
@@ -534,11 +540,11 @@ class Mqtt:
             if action == "vehicle":
                 self.vehicle_data = msg_data["data"]
                 self.data_received['vehicle'] = True
-                logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
+                #logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
             elif action == "status":
                 self.status_data = msg_data["data"]
                 self.data_received['status'] = True
-                logging.info(f"위치 정보 업데이트: {self.status_data}")
+                #logging.info(f"위치 정보 업데이트: {self.status_data}")
         except KeyError as e:
             logging.error(f"데이터 처리 중 오류 발생: {e}")
             
@@ -565,16 +571,18 @@ class Mqtt:
             _command = msg_data["header"]["command"]
             json_message = dict()
             
+            now = datetime.datetime.now()
+            end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            delay_time = (now - start_time).total_seconds() * 1000
+            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(delay_time, now, start_time))
+            
             print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
                     self.process_message(msg_data)
                     merged_data = self.data_merge()
-                    if merged_data:
-                        print("\n" + "="*50)
-                        print(f"📍 병합: {type(merged_data)}")
-                        print("="*50 + "\n")
                     
                     json_message["header"] = msg_data["header"]                    
                     data_message = str(json.dumps(merged_data, ensure_ascii=False))                    
@@ -669,8 +677,10 @@ class Mqtt:
             logging.error(f"메시지 처리 중 오류 발생: {str(e)}")
             return False        
 def start_kafka_consumer(mqtt_instance):
+    retry_count = 0
+    max_retries = 3
     try:
-        while True:
+        while retry_count < max_retries:
             try:
                 msg = consumer.poll(1.0)
                 
@@ -683,21 +693,30 @@ def start_kafka_consumer(mqtt_instance):
                     else:
                         logging.error(f"Kafka 에러 발생: {msg.error()}")
                     continue
-                
+                retry_count = 0
                 if mqtt_instance.process_kafka_message(msg):
                     consumer.commit()
                 else:
                     logging.error("메시지 처리 실패")
-                    
+            except KafkaError as e:
+                logging.error(f"Kafka 처리 중 오류 발생: {str(e)}")
+                break
             except Exception as e:
                 logging.error(f"Kafka 메시지 처리 중 오류 발생: {str(e)}")
-                
-    except KeyboardInterrupt:
-        logging.info("Kafka Consumer 종료")
-        consumer.close()
+                continue
+    
     except Exception as e:
-        logging.error(f"Kafka Consumer 실행 중 오류 발생: {str(e)}")
+        retry_count += 1
+        logging.error(f"Kafka Consumer 생성 실패(시도 {retry_count}/{max_retries}): {str(e)}")
+        if retry_count < max_retries:
+            time.sleep(3)
+        else:
+            logging.error("Kafka Consumer 최대 재시도 횟수 초과")
+    try:
         consumer.close()
+        logging.info("Kafka Consumer 정상 종료")
+    except Exception as e:
+        logging.error(f"Kafka Consumer 종료 중 오류 발생: {str(e)}")
 
 if __name__ == "__main__":
     _config = configparser.ConfigParser()
