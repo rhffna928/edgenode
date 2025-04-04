@@ -35,14 +35,15 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
+KAFKA_BROKER = os.getenv("172.30.1.20", ":9092")
 # Kafka Producer 설정
-producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
+producer_config = {'bootstrap.servers': KAFKA_BROKER}
 producer = Producer(producer_config)
 # Kafka Consumer 설정
 
 consumer_config = {
-    'bootstrap.servers': '172.30.1.20:9092',
-    'group.id': f'mqtt_consumer_{os.getpid()}',  # 프로세스 ID 기반 그룹 ID
+    'bootstrap.servers': KAFKA_BROKER,
+    'group.id': os.getpid(),  # 프로세스 ID 기반 그룹 ID
     'auto.offset.reset': 'latest',
     'enable.auto.commit': True,
     'auto.commit.interval.ms': 5000,
@@ -51,7 +52,7 @@ consumer_config = {
     'max.poll.interval.ms': 300000
 }
 consumer = Consumer(consumer_config)
-consumer.subscribe(['rep', 'req', 'event', 'heartbeat'])
+consumer.subscribe(["connect"])
 
 # JVM 시작
 jpype.startJVM()
@@ -490,7 +491,7 @@ class Mqtt:
                 send_message = json.dumps(json_message_edge, ensure_ascii=False)
                 #print(f"client_sockets_1############# : {client_sockets_1}")
                 #sendAll(client_sockets_1, send_message)
-                send_kafka_msg("connect", send_message)
+                send_kafka_msg("special", send_message)
                 logging.info("#1-2 edge로 보낼 메시지 {0}->{1}\n {2}".format(_strtpnt_res, _dstn_res, send_message))
 
             except TypeError as err:
@@ -554,7 +555,7 @@ class Mqtt:
                 return False
             try:
                 msg_data = json.loads(message.value().decode('utf-8'))
-                print(f"msg_data : {msg_data}")
+                #print(f"msg_data : {msg_data}")
             except json.JSONDecodeError:
                 logging.error("JSON 디코딩 실패")
                 return False
@@ -575,10 +576,11 @@ class Mqtt:
             end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
-            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(delay_time, now, start_time))
+            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(rount((delay_time),4), now, start_time))
             
-            print(f"_cmd: {_cmd}, _actn: {_actn}")
+            #print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행
+            
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
                     self.process_message(msg_data)

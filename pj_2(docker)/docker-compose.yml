@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  tsoc:
+  soc:
     build: .
     volumes:
       - ./logs:/app/logs
@@ -13,7 +13,7 @@ services:
       - KAFKA_BROKER=172.30.1.20:9092
       - ZOOKEEPER_CONNECT=localhost:2888
       - TZ=Asia/Seoul
-    command: python3 tsoc.py
+    command: python3 soc.py
 
   vehi:
     build: .
@@ -28,7 +28,7 @@ services:
       - TZ=Asia/Seoul
     command: python3 vehi.py
     depends_on:
-      - tsoc
+      - soc
   trac:
     build: .
     volumes:
@@ -42,7 +42,7 @@ services:
       - TZ=Asia/Seoul
     command: python3 trac.py
     depends_on:
-      - tsoc
+      - soc
   mqtt:
     build: .
     volumes:
@@ -55,7 +55,7 @@ services:
       - TZ=Asia/Seoul
     command: python3 nodemqtt.py
     depends_on:
-      - tsoc
+      - soc
       
 networks:
   docker-kafka_daa-kafka-cluster-network:
