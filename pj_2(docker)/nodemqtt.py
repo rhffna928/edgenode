@@ -554,7 +554,7 @@ class Mqtt:
                 return False
             try:
                 msg_data = json.loads(message.value().decode('utf-8'))
-                print(f"msg_data : {msg_data}")
+                #print(f"msg_data : {msg_data}")
             except json.JSONDecodeError:
                 logging.error("JSON 디코딩 실패")
                 return False
@@ -575,9 +575,9 @@ class Mqtt:
             end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
-            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(delay_time, now, start_time))
+            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(rount((delay_time),4), now, start_time))
             
-            print(f"_cmd: {_cmd}, _actn: {_actn}")
+            #print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
