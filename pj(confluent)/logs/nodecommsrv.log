@@ -21959,3 +21959,4 @@ OSError: [Errno 98] Address already in use
 2025-03-27 00:49:27,070 - INFO - [nodemqtt.py:541] 위치 정보 업데이트: {'speed': '11', 'battery': '20'}
 2025-03-27 00:49:27,071 - INFO - [nodemqtt.py:541] 위치 정보 업데이트: {'speed': '13', 'battery': '20'}
 2025-03-27 00:49:27,072 - INFO - [nodemqtt.py:541] 위치 정보 업데이트: {'speed': '14', 'battery': '20'}
+2025-04-03 05:27:08,938 - ERROR - [soc.py:379] Kafka 에러 발생: KafkaError{code=UNKNOWN_TOPIC_OR_PART,val=3,str="Subscribed topic not available: connect: Broker: Unknown topic or partition"}
