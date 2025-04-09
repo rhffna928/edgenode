@@ -150,5 +150,5 @@ if __name__ == "__main__":
     create_rotating_log(full_path, _config['LOGGER'])    
     
     consumer = StreetSweeperConsumer(bootstrap_servers='localhost:9092')
-    consumer.connect(['rep'])
+    consumer.connect(['connect'])
     consumer.run()

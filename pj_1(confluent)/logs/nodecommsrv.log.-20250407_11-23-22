@@ -1,0 +1,140 @@
+2025-04-07 11:20:51,434 - INFO - [soc.py:145] __init__ 호출 MyTCPHandler1
+2025-04-07 11:20:51,435 - INFO - [soc.py:170] 특장차 setup 호출
+2025-04-07 11:20:51,435 - INFO - [soc.py:184] 특장차 접속 :  172.30.1.80
+2025-04-07 11:20:51,435 - INFO - [soc.py:185] 현재 특장차 Client 접속수 : 1
+2025-04-07 11:20:51,603 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 66.606ms, (2025-04-07 11:20:51.595430 - 2025-04-07 11:20:51.528824)
+2025-04-07 11:20:51,603 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:20:51,626 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 55.057ms, (2025-04-07 11:20:51.625931 - 2025-04-07 11:20:51.570874)
+2025-04-07 11:20:51,626 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:20:54,591 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 55.027ms, (2025-04-07 11:20:54.591705 - 2025-04-07 11:20:54.536678)
+2025-04-07 11:20:54,592 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:20:55,263 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 114.029ms, (2025-04-07 11:20:55.262557 - 2025-04-07 11:20:55.148528)
+2025-04-07 11:20:55,263 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:20:55,817 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 56.05ms, (2025-04-07 11:20:55.816753 - 2025-04-07 11:20:55.760703)
+2025-04-07 11:20:55,817 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:20:56,429 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.671ms, (2025-04-07 11:20:56.429291 - 2025-04-07 11:20:56.374620)
+2025-04-07 11:20:56,430 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:20:57,042 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 55.196ms, (2025-04-07 11:20:57.042187 - 2025-04-07 11:20:56.986991)
+2025-04-07 11:20:57,042 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:20:57,655 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 55.007ms, (2025-04-07 11:20:57.654729 - 2025-04-07 11:20:57.599722)
+2025-04-07 11:20:57,655 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:20:58,334 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 119.959ms, (2025-04-07 11:20:58.334191 - 2025-04-07 11:20:58.214232)
+2025-04-07 11:20:58,335 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:20:58,882 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.363ms, (2025-04-07 11:20:58.882706 - 2025-04-07 11:20:58.828343)
+2025-04-07 11:20:58,883 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:20:59,491 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.691ms, (2025-04-07 11:20:59.491378 - 2025-04-07 11:20:59.436687)
+2025-04-07 11:20:59,492 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:21:00,178 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 133.158ms, (2025-04-07 11:21:00.178278 - 2025-04-07 11:21:00.045120)
+2025-04-07 11:21:00,179 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:21:00,713 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 53.544ms, (2025-04-07 11:21:00.712509 - 2025-04-07 11:21:00.658965)
+2025-04-07 11:21:00,713 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:21:01,201 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 733.241ms, (2025-04-07 11:21:01.201629 - 2025-04-07 11:21:00.468388)
+2025-04-07 11:21:01,202 - INFO - [soc.py:262] EDGE 수신 : rep status all E N TRAC000001 
+2025-04-07 11:21:01,323 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.196ms, (2025-04-07 11:21:01.323763 - 2025-04-07 11:21:01.269567)
+2025-04-07 11:21:01,324 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:21:01,940 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.29ms, (2025-04-07 11:21:01.939688 - 2025-04-07 11:21:01.885398)
+2025-04-07 11:21:01,940 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:21:02,551 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.766ms, (2025-04-07 11:21:02.551051 - 2025-04-07 11:21:02.496285)
+2025-04-07 11:21:02,552 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:21:03,197 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 89.738ms, (2025-04-07 11:21:03.196462 - 2025-04-07 11:21:03.106724)
+2025-04-07 11:21:03,197 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:21:03,848 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 127.416ms, (2025-04-07 11:21:03.848145 - 2025-04-07 11:21:03.720729)
+2025-04-07 11:21:03,849 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:21:04,399 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 71.553ms, (2025-04-07 11:21:04.398997 - 2025-04-07 11:21:04.327444)
+2025-04-07 11:21:04,399 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:21:04,996 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 55.12ms, (2025-04-07 11:21:04.995992 - 2025-04-07 11:21:04.940872)
+2025-04-07 11:21:04,997 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:21:05,607 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.789ms, (2025-04-07 11:21:05.607550 - 2025-04-07 11:21:05.552761)
+2025-04-07 11:21:05,607 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:21:06,245 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 80.988ms, (2025-04-07 11:21:06.244545 - 2025-04-07 11:21:06.163557)
+2025-04-07 11:21:06,245 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:21:06,835 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 58.727ms, (2025-04-07 11:21:06.835379 - 2025-04-07 11:21:06.776652)
+2025-04-07 11:21:06,836 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:21:07,487 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 99.659ms, (2025-04-07 11:21:07.486861 - 2025-04-07 11:21:07.387202)
+2025-04-07 11:21:07,487 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:21:08,164 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 162.034ms, (2025-04-07 11:21:08.164458 - 2025-04-07 11:21:08.002424)
+2025-04-07 11:21:08,165 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:21:08,669 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 54.11ms, (2025-04-07 11:21:08.669323 - 2025-04-07 11:21:08.615213)
+2025-04-07 11:21:08,670 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:21:09,393 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 163.634ms, (2025-04-07 11:21:09.393097 - 2025-04-07 11:21:09.229463)
+2025-04-07 11:21:09,393 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:21:09,900 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 55.299ms, (2025-04-07 11:21:09.900269 - 2025-04-07 11:21:09.844970)
+2025-04-07 11:21:09,901 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:21:10,319 - ERROR - [soc.py:341] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "soc.py", line 188, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-04-07 11:21:10,320 - INFO - [soc.py:359] finish
+2025-04-07 11:21:10,321 - INFO - [soc.py:363] 현재 특장차 Client 접속수 : 0
+2025-04-07 11:23:08,077 - INFO - [soc.py:145] __init__ 호출 MyTCPHandler1
+2025-04-07 11:23:08,078 - INFO - [soc.py:170] 특장차 setup 호출
+2025-04-07 11:23:08,078 - INFO - [soc.py:184] 특장차 접속 :  172.30.1.80
+2025-04-07 11:23:08,078 - INFO - [soc.py:185] 현재 특장차 Client 접속수 : 1
+2025-04-07 11:23:08,083 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.962ms, (2025-04-07 11:23:08.082882 - 2025-04-07 11:23:08.029920)
+2025-04-07 11:23:08,083 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:11,145 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 113.922ms, (2025-04-07 11:23:11.144922 - 2025-04-07 11:23:11.031000)
+2025-04-07 11:23:11,145 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:11,508 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 60.175ms, (2025-04-07 11:23:11.508039 - 2025-04-07 11:23:11.447864)
+2025-04-07 11:23:11,509 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:11,963 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 102.507ms, (2025-04-07 11:23:11.963001 - 2025-04-07 11:23:11.860494)
+2025-04-07 11:23:11,964 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:12,373 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 98.719ms, (2025-04-07 11:23:12.372958 - 2025-04-07 11:23:12.274239)
+2025-04-07 11:23:12,373 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:12,743 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.918ms, (2025-04-07 11:23:12.743064 - 2025-04-07 11:23:12.690146)
+2025-04-07 11:23:12,743 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:13,193 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 88.103ms, (2025-04-07 11:23:13.192860 - 2025-04-07 11:23:13.104757)
+2025-04-07 11:23:13,193 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:13,566 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.659ms, (2025-04-07 11:23:13.566332 - 2025-04-07 11:23:13.513673)
+2025-04-07 11:23:13,567 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:14,012 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 83.447ms, (2025-04-07 11:23:14.012062 - 2025-04-07 11:23:13.928615)
+2025-04-07 11:23:14,013 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:14,421 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 79.481ms, (2025-04-07 11:23:14.420970 - 2025-04-07 11:23:14.341489)
+2025-04-07 11:23:14,421 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:14,808 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.895ms, (2025-04-07 11:23:14.807951 - 2025-04-07 11:23:14.755056)
+2025-04-07 11:23:14,808 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:15,247 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 76.047ms, (2025-04-07 11:23:15.246571 - 2025-04-07 11:23:15.170524)
+2025-04-07 11:23:15,247 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:15,636 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 53.757ms, (2025-04-07 11:23:15.635966 - 2025-04-07 11:23:15.582209)
+2025-04-07 11:23:15,636 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:16,059 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 63.529ms, (2025-04-07 11:23:16.059092 - 2025-04-07 11:23:15.995563)
+2025-04-07 11:23:16,060 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:16,507 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 94.26ms, (2025-04-07 11:23:16.507046 - 2025-04-07 11:23:16.412786)
+2025-04-07 11:23:16,508 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:16,878 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 53.459ms, (2025-04-07 11:23:16.877568 - 2025-04-07 11:23:16.824109)
+2025-04-07 11:23:16,878 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:17,391 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 156.481ms, (2025-04-07 11:23:17.390642 - 2025-04-07 11:23:17.234161)
+2025-04-07 11:23:17,392 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:17,730 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 81.029ms, (2025-04-07 11:23:17.729733 - 2025-04-07 11:23:17.648704)
+2025-04-07 11:23:17,730 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:18,115 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.996ms, (2025-04-07 11:23:18.114919 - 2025-04-07 11:23:18.061923)
+2025-04-07 11:23:18,115 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:18,537 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 62.652ms, (2025-04-07 11:23:18.536911 - 2025-04-07 11:23:18.474259)
+2025-04-07 11:23:18,537 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:19,029 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 137.8ms, (2025-04-07 11:23:19.028969 - 2025-04-07 11:23:18.891169)
+2025-04-07 11:23:19,029 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:19,438 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 133.594ms, (2025-04-07 11:23:19.438468 - 2025-04-07 11:23:19.304874)
+2025-04-07 11:23:19,439 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:19,771 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.824ms, (2025-04-07 11:23:19.770855 - 2025-04-07 11:23:19.718031)
+2025-04-07 11:23:19,771 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:20,257 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 122.67ms, (2025-04-07 11:23:20.257470 - 2025-04-07 11:23:20.134800)
+2025-04-07 11:23:20,258 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:20,603 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 52.898ms, (2025-04-07 11:23:20.603437 - 2025-04-07 11:23:20.550539)
+2025-04-07 11:23:20,604 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:21,019 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 53.517ms, (2025-04-07 11:23:21.018754 - 2025-04-07 11:23:20.965237)
+2025-04-07 11:23:21,019 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:21,487 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 108.378ms, (2025-04-07 11:23:21.486612 - 2025-04-07 11:23:21.378234)
+2025-04-07 11:23:21,487 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:21,846 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 53.544ms, (2025-04-07 11:23:21.846415 - 2025-04-07 11:23:21.792871)
+2025-04-07 11:23:21,847 - INFO - [soc.py:262] EDGE 수신 : rep vehicle location E N TRAC000001 
+2025-04-07 11:23:22,260 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 53.139ms, (2025-04-07 11:23:22.260000 - 2025-04-07 11:23:22.206861)
+2025-04-07 11:23:22,260 - INFO - [soc.py:262] EDGE 수신 : rep status info E N TRAC000001 
+2025-04-07 11:23:22,716 - INFO - [soc.py:252] %%%%%%%%%%%% Edge -> EdgeNode delay_time: 92.165ms, (2025-04-07 11:23:22.715713 - 2025-04-07 11:23:22.623548)
+2025-04-07 11:23:22,716 - INFO - [soc.py:262] EDGE 수신 : rep cls ctrlinfo E N TRAC000001 
+2025-04-07 11:23:22,822 - ERROR - [soc.py:341] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "soc.py", line 188, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-04-07 11:23:22,823 - INFO - [soc.py:359] finish
+2025-04-07 11:23:22,824 - INFO - [soc.py:363] 현재 특장차 Client 접속수 : 0

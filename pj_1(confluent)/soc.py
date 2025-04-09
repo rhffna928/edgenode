@@ -41,14 +41,14 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-KAFKA_BROKER = os.getenv("KAFKA_BROKER", "daa-kafka1:19092")
+KAFKA_BROKER = os.getenv("KAFKA_BROKER", "172.30.1.20:9092")
 
 producer_config = {'bootstrap.servers': KAFKA_BROKER}
 producer = Producer(producer_config)
 
 consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
 consumer = Consumer(consumer_config)
-consumer.subscribe(['connect'])
+consumer.subscribe(['special'])
 
 # jpype.startJVM()
 # jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
@@ -261,16 +261,8 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             
                             logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
 
-                            if _cmd == "rep":
-                                resheader["cmd"] = _cmd_req
-                                resheader["strtpnt"] = _strtpnt_res
-                                resheader["dstn"] = _dstn_res
+                            if _cmd in ["rep", "req", "heartbeat","event"]:
 
-                                json_message["header"] = resheader
-                                json_message["data"] = res["data"]
-                                send_kafka_msg('rep', message=json_message)
-
-                            elif _cmd == "req":
                                 if _actn == "init":
                                     if _strtpnt == "M":
                                         _edgeId = _userId
@@ -286,7 +278,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                                 json_message["data"] = res["data"]
 
-                                send_kafka_msg('req', message=json_message)
+                                
                                 #if _actn == "globalpath":
                                     # if _dtlActn == "planwrite":
                                     #     json_message_edge = dict()
@@ -311,20 +303,8 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                     #     send_message = json.dumps(json_message_edge, ensure_ascii=False)
                                     #     sendAll(client_sockets_1, send_message)
                                     #     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
-                            elif _cmd == "event":
-                                resheader["cmd"] = _cmd_req
-                                resheader["strtpnt"] = _strtpnt_res
-                                resheader["dstn"] = _dstn_res
-
-                                json_message["header"] = resheader
-
-                                json_message["data"] = res["data"]
-
-                                send_kafka_msg('event', message=json_message)
-
-                            elif _cmd == "heartbeat":
-                                send_kafka_msg('heartbeat', message=res_repack)
-
+                                send_kafka_msg('connect', message=json_message)
+                                
                         except json.decoder.JSONDecodeError as err:
                             logging.exception("json.decoder.JSONDecodeError {0}, [{1}]".format(err, data))
                             continue

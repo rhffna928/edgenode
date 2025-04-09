@@ -576,7 +576,7 @@ class Mqtt:
             end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
-            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(rount((delay_time),4), now, start_time))
+            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(round((delay_time),4), now, start_time))
             
             #print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행

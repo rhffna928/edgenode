@@ -36,7 +36,7 @@ send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
 # Kafka Producer 설정
-producer_config = {'bootstrap.servers': 'localhost:9092'}
+producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
 producer = Producer(producer_config)
 # Kafka Consumer 설정
 consumer_config = {
@@ -46,7 +46,7 @@ consumer_config = {
     'enable.auto.commit': False
 }
 consumer = Consumer(consumer_config)
-consumer.subscribe(['rep', 'req', 'event', 'heartbeat'])
+consumer.subscribe(['connect'])
 
 # JVM 시작
 jpype.startJVM()
@@ -484,7 +484,7 @@ class Mqtt:
                 send_message = json.dumps(json_message_edge, ensure_ascii=False)
                 #print(f"client_sockets_1############# : {client_sockets_1}")
                 #sendAll(client_sockets_1, send_message)
-                send_kafka_msg("connect", send_message)
+                send_kafka_msg("special", send_message)
                 logging.info("#1-2 edge로 보낼 메시지 {0}->{1}\n {2}".format(_strtpnt_res, _dstn_res, send_message))
 
             except TypeError as err:
@@ -534,11 +534,11 @@ class Mqtt:
             if action == "vehicle":
                 self.vehicle_data = msg_data["data"]
                 self.data_received['vehicle'] = True
-                logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
+                #logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
             elif action == "status":
                 self.status_data = msg_data["data"]
                 self.data_received['status'] = True
-                logging.info(f"위치 정보 업데이트: {self.status_data}")
+                #logging.info(f"위치 정보 업데이트: {self.status_data}")
         except KeyError as e:
             logging.error(f"데이터 처리 중 오류 발생: {e}")
             
@@ -548,7 +548,7 @@ class Mqtt:
                 return False
             try:
                 msg_data = json.loads(message.value().decode('utf-8'))
-                print(f"msg_data : {msg_data}")
+                #print(f"msg_data : {msg_data}")
             except json.JSONDecodeError:
                 logging.error("JSON 디코딩 실패")
                 return False
@@ -565,16 +565,18 @@ class Mqtt:
             _command = msg_data["header"]["command"]
             json_message = dict()
             
-            print(f"_cmd: {_cmd}, _actn: {_actn}")
+            now = datetime.datetime.now()
+            end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            delay_time = (now - start_time).total_seconds() * 1000
+            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(round((delay_time),4), now, start_time))
+            
+            #print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
                     self.process_message(msg_data)
                     merged_data = self.data_merge()
-                    if merged_data:
-                        print("\n" + "="*50)
-                        print(f"📍 병합: {type(merged_data)}")
-                        print("="*50 + "\n")
                     
                     json_message["header"] = msg_data["header"]                    
                     data_message = str(json.dumps(merged_data, ensure_ascii=False))                    
