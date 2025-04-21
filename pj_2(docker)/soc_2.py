@@ -93,7 +93,7 @@ def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
     
-    logging.info(f"########################카프카 {topic}전송")
+    #logging.info(f"########################카프카 {topic}전송")
 
 
 def create_rotating_log(path, _config):

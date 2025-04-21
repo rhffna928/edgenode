@@ -11,6 +11,8 @@ from logging.handlers import TimedRotatingFileHandler
 import os
 from pathlib import Path
 import configparser
+import sys
+import threading
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG = Path(ROOT_DIR) / 'nodecommsrv.ini' # config.ini 설정
@@ -78,16 +80,14 @@ class VehicleDataConsumer:
         }
         
         self.consumer = Consumer(self.consumer_config)
-        self.vehicle_data = {}
-        self.status_data = {}
+        self.vehicle_info = None
+        self.vehicle_location = None
         self.edgeId = None
         self.edgeTy = None
+        self.timer_interval = 2
         self.sqlitectrl = SqliteController("./sqlite_db/test.db")
         self.gbutil = GBUtil()
-        self.data_received = {
-            'vehicle': False,
-            'status': False
-        }
+       
         
     def connect(self, topics: list):
         try:
@@ -99,64 +99,48 @@ class VehicleDataConsumer:
             raise
 
     def data_merge(self):
-        if not (self.data_received['vehicle'] and self.data_received['status']):
-            return None
-            
-        now = datetime.datetime.now()
-        header_repack = dict()
+        """스레드 실행메소드"""
+        while(True):
+            time.sleep(2)
+            now = datetime.datetime.now()
 
-        header_repack["cmd"] = str("rep")
-        header_repack["actn"] = str("vehicle")
-        header_repack["dtlActn"] = str("common")
-        header_repack["strtpnt"] = "N"
-        header_repack["dstn"] = "H"
+            # 공통정보, 위치 머지한값 보내지
+            header_repack = dict()
 
-        header_repack["userId"] = ""
-        header_repack["edgeId"] = self.edgeId
-        header_repack["edgeTy"] = self.edgeTy
+            header_repack["cmd"] = str("rep")
+            header_repack["actn"] = str("vehicle")
+            header_repack["dtlActn"] = str("common")
+            header_repack["strtpnt"] = "N"
+            header_repack["dstn"] = "H"
 
-        new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-        header_repack["timestamp"] = new_timestamp    
-        header_repack["command"] = "60320"
-        
-        if self.vehicle_data and self.status_data:
-            json_message = dict()
-            merge = {**self.vehicle_data, **self.status_data}
+            header_repack["userId"] = ""
+            header_repack["edgeId"] = self.edgeId
+            header_repack["edgeTy"] = self.edgeTy
             
-            snake = self.gbutil.tosnake_dictname(merge)
-            db_in_datas = self.gbutil.dictToSql(snake)
-            db_in_datas['VEHICLE_ID'] = "\"" + self.edgeId + "\""
-            db_in_datas['VEHICLE_TYPE'] = "\"" + self.edgeTy + "\""
-            db_conditions = {'tablename': '"VEHICLE_ING_INFO"'}
-            try:
-                result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)            
-            except Exception as e:
-                print(e)
-            
-            # 데이터 초기화
-            self.vehicle_data = {}
-            self.status_data = {}
-            self.data_received = {
-                'vehicle': False,
-                'status': False
-            }
-            
-            return merge
-        return None
-    
-    def process_message(self, data: Dict[str, Any]):
-        try:
-            action = data["header"]["actn"]
-            if action == "vehicle":
-                self.vehicle_data = data["data"]
-                self.data_received['vehicle'] = True
-                logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
-            elif action == "status":
-                self.status_data = data["data"]
-                self.data_received['status'] = True
-                logging.info(f"위치 정보 업데이트: {self.status_data}")
-        except KeyError as e:
-            logging.error(f"데이터 처리 중 오류 발생: {e}")
+            new_timestamp = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
+
+            header_repack["timestamp"] = new_timestamp    
+            header_repack["command"] = "60320"
+            logging.info("************** work_doing_monitor ********************************************** {0}, {1}, {2}, {3}".format(self.vehicle_info, self.vehicle_location,self.edgeId, self.edgeTy ))
+
+            if self.vehicle_info is not None and self.vehicle_location is not None and self.edgeId is not None and self.edgeTy is not None:
+                json_message = dict()
+                
+                #data_message = self.vehicle_info + self.vehicle_location
+                data_merge = {**self.vehicle_info, **self.vehicle_location}
+
+                snake = self.gbutil.tosnake_dictname(data_merge)
+                db_in_datas = self.gbutil.dictToSql(snake)
+                db_in_datas['VEHICLE_ID'] = "\"" + self.edgeId + "\""
+                db_in_datas['VEHICLE_TYPE'] = "\"" + self.edgeTy + "\""
+                db_conditions = {'tablename': '"VEHICLE_ING_INFO"'}
+                try:
+                    result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)            
+                except Exception as e:
+                    print(e)
+                logging.info("************** work_doing_monitor ********************")
+            # self.vehicle_info = None
+            # self.vehicle_location = None
 
     def run(self):
         try:
@@ -178,15 +162,17 @@ class VehicleDataConsumer:
                     
                     self.edgeId = data["header"]["edgeId"]
                     self.edgeTy = data["header"]["edgeTy"]
-                    self.process_message(data)
+                    _actn = data["header"]["actn"]
+                    _dtlActn = data["header"]["dtlActn"]
                     
-                    # 두 데이터가 모두 수신되었을 때만 병합
-                    merged_data = self.data_merge()
-                    if merged_data:
-                        print("\n" + "="*50)
-                        print(f"📍 병합: {merged_data}")
-                        print("="*50 + "\n")
-                    
+                    if _actn in ["status", "vehicle"]:
+                        if _dtlActn == "info":
+                            self.vehicle_info = data["data"]
+                            #print(data["data"])
+                        elif _dtlActn == "position":
+                            self.vehicle_location = data["data"]
+                            self.data_merge()   
+
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
                 
@@ -205,8 +191,19 @@ if __name__ == "__main__":
     create_rotating_log(full_path, _config['LOGGER'])
 
     consumer = VehicleDataConsumer(
-        bootstrap_servers='localhost:9092',
+        bootstrap_servers='192.168.10.101:9092',
         group_id=random.randint(0, 100)
     )
-    consumer.connect(['rep'])
+    consumer.connect(['connect'])
     consumer.run()
+    try:
+        run = threading.Thread(target=VehicleDataConsumer.run, args=())
+        run.start()
+        #data merge 시작
+        merge = threading.Thread(target=VehicleDataConsumer.data_merge, args=("param1", "param2"))
+        merge.start()
+
+    except:
+        consumer.commit()
+        logger.exception("서비스 실행 실패...")
+        sys.exit()

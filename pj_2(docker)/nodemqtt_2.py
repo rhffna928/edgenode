@@ -141,12 +141,9 @@ class Mqtt:
         self.userId = None
         self.notOkAddSub = True
         self.subcribes = None
-        self.vehicle_data = {}
-        self.status_data = {}
-        self.data_received = {
-            'vehicle': False,
-            'status': False
-        }
+        self.timer_interval = 1
+        self.vehicle_info = None
+        self.vehicle_location = None
 
         try:
             client_mqtt = self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1)
@@ -470,7 +467,6 @@ class Mqtt:
             resheader["timestamp"] = _timestamp
             resheader["edgeTy"] = _edgeTy
             json_message_edge["header"] = resheader
-
             try:
                 data_message = resdata4edge
                 start_time = time.time()
@@ -498,56 +494,55 @@ class Mqtt:
                 logging.exception("%s. ", err)
             except Exception as err:                
                 logging.exception("%s. ", err)
-            
+                
     def data_merge(self):
+        """스레드 실행메소드"""
+        while(1):
+            time.sleep(self.timer_interval)
 
-        if not (self.data_received['vehicle'] and self.data_received['status']):
-            return None
-            
-        now = datetime.datetime.now()
-        header_repack = dict()
+            now = datetime.datetime.now()
 
-        header_repack["cmd"] = str("rep")
-        header_repack["actn"] = str("vehicle")
-        header_repack["dtlActn"] = str("common")
-        header_repack["strtpnt"] = "N"
-        header_repack["dstn"] = "H"
+            # 공통정보, 위치 머지한값 보내지
+            header_repack = dict()
 
-        header_repack["userId"] = ""
-        header_repack["edgeId"] = self.edgeId
-        header_repack["edgeTy"] = self.edgeTy
+            header_repack["cmd"] = str("rep")
+            header_repack["actn"] = str("vehicle")
+            header_repack["dtlActn"] = str("common")
+            header_repack["strtpnt"] = "N"
+            header_repack["dstn"] = "H"
 
-        new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-        header_repack["timestamp"] = new_timestamp    
-        header_repack["command"] = "60320"
-        
-        if self.vehicle_data and self.status_data:
-            header_repack["data"] = {**self.vehicle_data, **self.status_data}
-            
-            # 데이터 초기화
-            self.vehicle_data = {}
-            self.status_data = {}
-            self.data_received = {
-                'vehicle': False,
-                'status': False
-            }
-            
-            return header_repack
-        return None
+            header_repack["userId"] = ""
+            header_repack["edgeId"] = self.edgeId
+            header_repack["edgeTy"] = self.edgeTy
+            new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            header_repack["timestamp"] = new_timestamp    
+            header_repack["command"] = "60320"
 
-    def process_message(self, msg_data):
-        try:
-            action = msg_data["header"]["actn"]
-            if action == "vehicle":
-                self.vehicle_data = msg_data["data"]
-                self.data_received['vehicle'] = True
-                #logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
-            elif action == "status":
-                self.status_data = msg_data["data"]
-                self.data_received['status'] = True
-                #logging.info(f"위치 정보 업데이트: {self.status_data}")
-        except KeyError as e:
-            logging.error(f"데이터 처리 중 오류 발생: {e}")
+            #logging.info("************** work_doing_monitor ********************************************** {0}, {1}, {2}, {3}".format(self.vehicle_info, self.vehicle_location,self.edgeId, self.edgeTy ))
+
+            if self.vehicle_info is not None and self.vehicle_location is not None and self.edgeId is not None and self.edgeTy is not None:
+                print(self.vehicle_info)
+                print(self.vehicle_location)
+                json_message = dict()
+                
+                #data_message = self.vehicle_info + self.vehicle_location
+                data_merge = {**self.vehicle_info, **self.vehicle_location}
+
+                data_message = str(json.dumps(data_merge, ensure_ascii=False))
+                
+                send_data = jvm_msg_encrypt_class.encode(new_timestamp, self.edgeId, data_message)
+
+                json_message["header"] = header_repack
+
+                json_message["data"] = str(send_data)
+                
+                send_message = json.dumps(json_message, ensure_ascii=False)
+
+                logging.info("************** work_doing_monitor ******************** {0}".format(data_message))
+
+                mqtt.pubHub4Node(send_message)
+            self.vehicle_info = None
+            self.vehicle_location = None
             
     def process_kafka_message(self, message):
         try:
@@ -566,8 +561,12 @@ class Mqtt:
             
             _cmd = msg_data["header"]["cmd"]
             _actn = msg_data["header"]["actn"]
+            _dtlActn = msg_data["header"]["dtlActn"]
             _timestamp = msg_data["header"]["timestamp"]
+            _strtpnt = msg_data["header"]["strtpnt"]
+            _dstn = msg_data["header"]["dstn"]
             _edgeId = msg_data["header"]["edgeId"]
+            _userId = msg_data["header"]["userId"]
             _edgeTy = msg_data["header"]["edgeTy"]
             _command = msg_data["header"]["command"]
             json_message = dict()
@@ -577,21 +576,24 @@ class Mqtt:
             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
             logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(round((delay_time),4), now, start_time))
+            logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
             
             #print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행
             
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
-                    self.process_message(msg_data)
-                    merged_data = self.data_merge()
+                    if _dtlActn == "info":
+                        self.vehicle_info = msg_data["data"]
+                    elif _dtlActn == "location":
+                        self.vehicle_location = msg_data["data"]
                     
-                    json_message["header"] = msg_data["header"]                    
-                    data_message = str(json.dumps(merged_data, ensure_ascii=False))                    
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
-                    json_message["data"] = str(send_data)                    
-                    send_message = json.dumps(json_message, ensure_ascii=False)                    
-                    self.pubHub4Node(send_message)
+                    # json_message["header"] = msg_data["header"]                    
+                    # data_message = str(json.dumps(merged_data, ensure_ascii=False))                    
+                    # send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
+                    # json_message["data"] = str(send_data)                    
+                    # send_message = json.dumps(json_message, ensure_ascii=False)                    
+                    # self.pubHub4Node(send_message)
                 elif _actn == "alarm":
                     json_message["header"] = msg_data["header"]                
                     data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
@@ -765,6 +767,10 @@ if __name__ == "__main__":
         # MQTT 클라이언트 시작
         mqtt_thread = threading.Thread(target=mqtt.start, args=(subcribes, False))
         mqtt_thread.start()
+                
+        #data merge 시작
+        merge = threading.Thread(target=mqtt.data_merge, args=())
+        merge.start()
         
         # Kafka Consumer 시작
         kafka_thread = threading.Thread(target=start_kafka_consumer, args=(mqtt,))
