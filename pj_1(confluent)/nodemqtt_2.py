@@ -36,11 +36,11 @@ send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
 # Kafka Producer 설정
-producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
+producer_config = {'bootstrap.servers': '192.168.10.101:9092'}
 producer = Producer(producer_config)
 # Kafka Consumer 설정
 consumer_config = {
-    'bootstrap.servers': '172.30.1.20:9092',
+    'bootstrap.servers': '192.168.10.101:9092',
     'group.id': random.randint(0, 100),
     'auto.offset.reset': 'latest',
     'enable.auto.commit': False
@@ -135,12 +135,9 @@ class Mqtt:
         self.userId = None
         self.notOkAddSub = True
         self.subcribes = None
-        self.vehicle_data = {}
-        self.status_data = {}
-        self.data_received = {
-            'vehicle': False,
-            'status': False
-        }
+        self.timer_interval = 1
+        self.vehicle_info = None
+        self.vehicle_location = None
 
         try:
             client_mqtt = self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1)
@@ -163,7 +160,7 @@ class Mqtt:
             _json_message = dict()
 
             now = datetime.datetime.now()
-            now_str = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            now_str = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
 
             _header["cmd"] = "req"
             _header["actn"] = "init"
@@ -229,7 +226,7 @@ class Mqtt:
 
     def setLogger(self, logger):
         self.logger = logger
-
+        
     def ready(self, _host, _port, _edgeid, _edgety, _topic_subs_base, _pub_init_topic, _pub_edgenode_topic):
         self.edgeId = _edgeid
         self.edgeTy = _edgety
@@ -314,8 +311,8 @@ class Mqtt:
             _command = str(res["header"]["command"])
 
             now = datetime.datetime.now()
-            end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            end_time = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
+            start_time = datetime.datetime.strptime(_timestamp, '%Y:%m:%d-%H:%M:%S.%f')
             delay_time = (now - start_time) * 1000
             logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: {0}ms , ({1} - {2})".format(delay_time, now, start_time))
 
@@ -459,6 +456,7 @@ class Mqtt:
 
         elif send_direction == Constant.EDGE or send_direction == Constant.EDGE_EDGEHUB:
             json_message_edge = dict()
+            json_message_edge["header"] = dict()
             json_message_edge["header"]["command"] = _command
             json_message_edge["header"]["VID"] = _edgeId
             json_message_edge["header"]["timestamp"] = _timestamp
@@ -493,75 +491,55 @@ class Mqtt:
                 logging.exception("%s. ", err)
             
     def data_merge(self):
-        if not (self.data_received['vehicle'] and self.data_received['status']):
-            return None
+        """스레드 실행메소드"""
+        while(1):
+            time.sleep(self.timer_interval)
+
+            now = datetime.datetime.now()
+
+            # 공통정보, 위치 머지한값 보내지
+            header_repack = dict()
+
+            header_repack["cmd"] = str("rep")
+            header_repack["actn"] = str("vehicle")
+            header_repack["dtlActn"] = str("common")
+            header_repack["strtpnt"] = "N"
+            header_repack["dstn"] = "H"
+
+            header_repack["userId"] = ""
+            header_repack["edgeId"] = self.edgeId
+            header_repack["edgeTy"] = self.edgeTy
             
-        now = datetime.datetime.now()
-        header_repack = dict()
+            new_timestamp = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
 
-        header_repack["cmd"] = str("rep")
-        header_repack["actn"] = str("vehicle")
-        header_repack["dtlActn"] = str("common")
-        header_repack["strtpnt"] = "N"
-        header_repack["dstn"] = "H"
+            header_repack["timestamp"] = new_timestamp    
+            header_repack["command"] = "60320"
 
-        header_repack["userId"] = ""
-        header_repack["edgeId"] = self.edgeId
-        header_repack["edgeTy"] = self.edgeTy
+            #logging.info("************** work_doing_monitor ********************************************** {0}, {1}, {2}, {3}".format(self.vehicle_info, self.vehicle_location,self.edgeId, self.edgeTy ))
 
-        new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-        header_repack["timestamp"] = new_timestamp    
-        header_repack["command"] = "60320"
+            if self.vehicle_info is not None and self.vehicle_location is not None and self.edgeId is not None and self.edgeTy is not None:
+                json_message = dict()
+                
+                #data_message = self.vehicle_info + self.vehicle_location
+                data_merge = {**self.vehicle_info, **self.vehicle_location}
+
+                data_message = str(json.dumps(data_merge, ensure_ascii=False))
+                
+                send_data = jvm_msg_encrypt_class.encode(new_timestamp, self.edgeId, data_message)
+
+                json_message["header"] = header_repack
+
+                json_message["data"] = str(send_data)
+                
+                send_message = json.dumps(json_message, ensure_ascii=False)
+
+                logging.info("************** work_doing_monitor ******************** {0}".format(data_message))
+
+                mqtt.pubHub4Node(send_message)
+            self.vehicle_info = None
+            self.vehicle_location = None
+      
         
-        if self.vehicle_data and self.status_data:
-            json_message = dict()
-            
-            merge_message = {**self.vehicle_data, **self.status_data}
-            
-            json_message["header"] = header_repack
-            json_message["data"] = str(merge_message)
-            # 데이터 초기화
-            self.vehicle_data = {}
-            self.status_data = {}
-            self.data_received = {
-                'vehicle': False,
-                'status': False
-            }
-            return json_message
-        return None
-        #     data_message = str(json.dumps(merge_message, ensure_ascii=False))
-            
-        #     send_data = jvm_msg_encrypt_class.encode(new_timestamp, self._edgeId, data_message)                    
-            
-        #     json_message["header"] = header_repack
-        #     json_message["data"] = str(send_data)
-                                
-        #     send_message = json.dumps(json_message, ensure_ascii=False)                    
-        #     # 데이터 초기화
-        #     self.vehicle_data = {}
-        #     self.status_data = {}
-        #     self.data_received = {
-        #         'vehicle': False,
-        #         'status': False
-        #     }
-        # self.pubHub4Node(send_message)
-            
-            
-
-    def process_message(self, msg_data):
-        try:
-            action = msg_data["header"]["actn"]
-            if action == "vehicle":
-                self.vehicle_data = msg_data["data"]
-                self.data_received['vehicle'] = True
-                #logging.info(f"차량 정보 업데이트: {self.vehicle_data}")
-            elif action == "status":
-                self.status_data = msg_data["data"]
-                self.data_received['status'] = True
-                #logging.info(f"위치 정보 업데이트: {self.status_data}")
-        except KeyError as e:
-            logging.error(f"데이터 처리 중 오류 발생: {e}")
-            
     def process_kafka_message(self, message):
         try:
             if not message.value():
@@ -589,8 +567,8 @@ class Mqtt:
             _command = msg_data["header"]["command"]
             json_message = dict()
             
-            end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            end_time = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
+            start_time = datetime.datetime.strptime(_timestamp, '%Y:%m:%d-%H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
             logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(round((delay_time),4), now, start_time))
             logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
@@ -599,17 +577,10 @@ class Mqtt:
             # 메시지 타입에 따라 mqtt발행
             if _cmd == "rep":
                 if _actn in ["status","vehicle"]:
-                    self.process_message(msg_data)
-                    merged_data = self.data_merge()
-                    if merged_data is None:
-                        return False
-                    else:
-                        json_message["header"] = merged_data["header"]                    
-                        data_message = str(json.dumps(merged_data, ensure_ascii=False))                    
-                        send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
-                        json_message["data"] = str(send_data)                    
-                        send_message = json.dumps(json_message, ensure_ascii=False)                    
-                        self.pubHub4Node(send_message)
+                    if _dtlActn == "info":
+                        self.vehicle_info = msg_data["data"]
+                    elif _dtlActn == "position":
+                        self.vehicle_location = msg_data["data"]
                 elif _actn == "alarm":
                     json_message["header"] = msg_data["header"]                
                     data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
@@ -773,6 +744,10 @@ if __name__ == "__main__":
         mqtt_thread = threading.Thread(target=mqtt.start, args=(subcribes, False))
         mqtt_thread.start()
         
+        #data merge 시작
+        merge = threading.Thread(target=mqtt.data_merge, args=())
+        merge.start()
+        
         # Kafka Consumer 시작
         kafka_thread = threading.Thread(target=start_kafka_consumer, args=(mqtt,))
         kafka_thread.start()
@@ -781,5 +756,6 @@ if __name__ == "__main__":
         mqtt_thread.join()
         kafka_thread.join()
     except:
+        consumer.commit()
         logger.exception("서비스 실행 실패...")
         sys.exit()

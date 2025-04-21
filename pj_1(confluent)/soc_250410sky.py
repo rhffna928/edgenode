@@ -207,11 +207,11 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                         
                         try:
                             res= json.loads(str(data))
-                            print(res["VID"])
+                            
                             edge_command = (res["command"])
-                            #print(f"edge_command : {edge_command}")
+                            print(f"edge_command : {edge_command}")
                             try:
-                                cmd_mapping = command_tbl[edge_command]
+                                cmd_mapping = command_tbl[str(edge_command)]
                             except KeyError as e:
                                 print(e)
                                 continue
@@ -232,7 +232,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                             res_repack["header"] = header_repack
                             res_repack["data"] = res["data"]
-
+                            
                             ########################################################################
 
                             _command = str(res_repack["header"]["command"])
@@ -247,7 +247,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             _edgeId = str(res_repack["header"]["edgeId"])
                             _edgeTy = str(res_repack["header"]["edgeTy"])
                             _timestamp = str(res_repack["header"]["timestamp"])
-                            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')                        
+                            start_time = datetime.datetime.strptime(_timestamp, '%Y:%m:%d-%H:%M:%S.%f')                        
                             delay_time = (now - start_time).total_seconds() * 1000 # 밀리세컨드 단위로 변환
                             logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time: {0}ms, ({1} - {2})".format(round(delay_time,4), now, start_time))
 

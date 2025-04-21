@@ -133,6 +133,7 @@ class StreetSweeperConsumer:
                     if data["header"]["actn"] == "cls":
                         result = self.process_cls_data(data)
                     
+                    
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
                 
@@ -149,6 +150,7 @@ if __name__ == "__main__":
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])    
     
-    consumer = StreetSweeperConsumer(bootstrap_servers='localhost:9092')
-    consumer.connect(['rep'])
+    consumer = StreetSweeperConsumer(bootstrap_servers='192.168.10.101:9092')
+    consumer.connect(['connect'])
     consumer.run()
+    consumer.commit()
