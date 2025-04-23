@@ -56,7 +56,7 @@ jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
 jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
 #jvm_aes_class = jpype.JClass("watosys.utils.eg.encrypt.AES")
 
-producer_config = {'bootstrap.servers': 'localhost:9092'}
+producer_config = {'bootstrap.servers': '172.30.1.20:9092'}
 producer = Producer(producer_config)
 
 def send_kafka_msg(topic, message):

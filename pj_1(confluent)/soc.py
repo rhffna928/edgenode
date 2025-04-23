@@ -226,7 +226,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                             header_repack["userId"] = ""
                             self.edgeId = header_repack["edgeId"] = (res["VID"])
-                            self.edgeTy = header_repack["edgeTy"] = "STSW000001"#(res["edgeTy"])
+                            self.edgeTy = header_repack["edgeTy"] = (res["edgeTy"])
                             header_repack["timestamp"] = (res["timestamp"])
                             header_repack["command"] = edge_command
 
