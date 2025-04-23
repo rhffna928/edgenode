@@ -41,7 +41,7 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-KAFKA_BROKER = os.getenv("KAFKA_BROKER", "192.168.10.101:9092")
+KAFKA_BROKER = os.getenv("KAFKA_BROKER", "172.30.1.20:9092")
 
 producer_config = {'bootstrap.servers': KAFKA_BROKER}
 producer = Producer(producer_config)

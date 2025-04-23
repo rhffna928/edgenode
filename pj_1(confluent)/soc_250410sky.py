@@ -204,10 +204,10 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                         json_message = dict()
                         res_repack = dict()
-                        
+
                         try:
                             res= json.loads(str(data))
-                            
+
                             edge_command = (res["command"])
                             print(f"edge_command : {edge_command}")
                             try:
@@ -215,24 +215,24 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             except KeyError as e:
                                 print(e)
                                 continue
-                            
+
                             header_repack = dict()
                             header_repack["cmd"] = str(cmd_mapping["cmd"])
                             header_repack["actn"] = str(cmd_mapping["actn"])
                             header_repack["dtlActn"] = str(cmd_mapping["dtlActn"])
-                            
+
                             header_repack["strtpnt"] = "E"
                             header_repack["dstn"] = "N"
 
                             header_repack["userId"] = ""
                             self.edgeId = header_repack["edgeId"] = (res["VID"])
-                            self.edgeTy = header_repack["edgeTy"] = "STSW000001"#(res["edgeTy"])
+                            self.edgeTy = header_repack["edgeTy"] = (res["edgeTy"])
                             header_repack["timestamp"] = (res["timestamp"])
                             header_repack["command"] = edge_command
 
                             res_repack["header"] = header_repack
                             res_repack["data"] = res["data"]
-                            
+
                             ########################################################################
 
                             _command = str(res_repack["header"]["command"])
@@ -258,7 +258,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             resheader = res_repack["header"]
                             resdata = dict()
                             send_direction = Constant.NONE
-                            
+
                             logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
 
                             if _cmd in ["rep", "req", "heartbeat","event"]:
@@ -278,7 +278,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                                 json_message["data"] = res["data"]
 
-                                
+
                                 #if _actn == "globalpath":
                                     # if _dtlActn == "planwrite":
                                     #     json_message_edge = dict()

@@ -152,6 +152,6 @@ if __name__ == "__main__":
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])    
     
-    consumer = TractorConsumer(bootstrap_servers='localhost:9092')
+    consumer = TractorConsumer(bootstrap_servers='172.30.1.20:9092')
     consumer.connect(['rep'])
     consumer.run()
