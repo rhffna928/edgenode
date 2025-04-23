@@ -17,8 +17,6 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-
-
 # 로깅 설정
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
@@ -92,26 +90,41 @@ class TractorConsumer:
 
     def process_trc_data(self, data: Dict[str, Any]) -> bool:
         try:
-            snake = self.gbutil.tosnake_dictname(data["data"])
-            logging.debug(f"변환된 snake case 데이터: {snake}")
-            
-            db_in_datas = self.gbutil.dictToSql(snake)
+            db_in_datas = {}
             db_in_datas['VEHICLE_ID'] = f"\"{data['header']['edgeId']}\""
-            db_conditions = {'tablename': '"TRACTOR_INFO"'}
-            
-            logging.debug(f"DB 입력 데이터: {db_in_datas}")
-            try:
-                result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)
-                logging.info(f"✅ [Consumer 4] trac 데이터 처리 성공: {result}")
-                return result
-            except Exception as e:
-                logging.error(f"데이터 처리 중 오류 발생: {e}")
-                return False
+            if data['header']['command'] == "70500":
+                
+                db_in_datas['WORK_AREA'] = f"\"{data['data']['workArea']}\""
+                db_in_datas['WORK_PATH'] = f"\"{data['data']['workPath']}\""
+                
+                db_conditions = {'tablename': '"WORK_INFO_TRACTOR"'}
+                try:
+                    result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)
+                    logging.info(f" workinfo 데이터 처리 성공: {db_in_datas.keys()}")
+                    return result
+                except Exception as e:
+                    logging.error(f"데이터 처리 중 오류 발생: {e}")
+                    return False
+                
+            if data['header']['command'] == "70300":
+                snake = self.gbutil.tosnake_dictname(data["data"])
+
+                #logging.info(f"변환된 snake case 데이터: {snake}")
+                db_in_datas = self.gbutil.dictToSql(snake)
+                print(db_in_datas)
+                db_conditions = {'tablename': '"TRACTOR_INFO"'}
+                try:
+                    result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)
+                    logging.info(f" trac 데이터 처리 성공: {db_in_datas.keys()}")
+                    return result
+                except Exception as e:
+                    logging.error(f"데이터 처리 중 오류 발생: {e}")
+                    return False
             
         except Exception as e:
             logging.error(f"데이터 처리 중 오류 발생: {e}")
             return False
-
+        
     def run(self):
         try:
             while True:
@@ -131,10 +144,7 @@ class TractorConsumer:
                     data = json.loads(msg.value())
                     
                     if data["header"]["actn"] == "tractor":
-                        result = self.process_trc_data(data)
-                        print("\n" + "="*50)
-                        print(f"📍 처리 결과: {result}")
-                        print("="*50 + "\n")
+                        self.process_trc_data(data)
                     
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
@@ -152,6 +162,6 @@ if __name__ == "__main__":
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])    
     
-    consumer = TractorConsumer(bootstrap_servers='localhost:9092')
-    consumer.connect(['rep'])
+    consumer = TractorConsumer(bootstrap_servers='172.30.1.20:9092')
+    consumer.connect(['connect'])
     consumer.run()

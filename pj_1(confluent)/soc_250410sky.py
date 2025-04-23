@@ -41,15 +41,6 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-KAFKA_BROKER = os.getenv("KAFKA_BROKER", "192.168.10.101:9092")
-
-producer_config = {'bootstrap.servers': KAFKA_BROKER}
-producer = Producer(producer_config)
-
-consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
-consumer = Consumer(consumer_config)
-consumer.subscribe(['special'])
-
 # jpype.startJVM()
 # jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
 # jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
@@ -204,10 +195,10 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                         json_message = dict()
                         res_repack = dict()
-                        
+
                         try:
                             res= json.loads(str(data))
-                            
+
                             edge_command = (res["command"])
                             print(f"edge_command : {edge_command}")
                             try:
@@ -215,24 +206,24 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             except KeyError as e:
                                 print(e)
                                 continue
-                            
+
                             header_repack = dict()
                             header_repack["cmd"] = str(cmd_mapping["cmd"])
                             header_repack["actn"] = str(cmd_mapping["actn"])
                             header_repack["dtlActn"] = str(cmd_mapping["dtlActn"])
-                            
+
                             header_repack["strtpnt"] = "E"
                             header_repack["dstn"] = "N"
 
                             header_repack["userId"] = ""
                             self.edgeId = header_repack["edgeId"] = (res["VID"])
-                            self.edgeTy = header_repack["edgeTy"] = "STSW000001"#(res["edgeTy"])
+                            self.edgeTy = header_repack["edgeTy"] = (res["edgeTy"])
                             header_repack["timestamp"] = (res["timestamp"])
                             header_repack["command"] = edge_command
 
                             res_repack["header"] = header_repack
                             res_repack["data"] = res["data"]
-                            
+
                             ########################################################################
 
                             _command = str(res_repack["header"]["command"])
@@ -258,7 +249,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             resheader = res_repack["header"]
                             resdata = dict()
                             send_direction = Constant.NONE
-                            
+
                             logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
 
                             if _cmd in ["rep", "req", "heartbeat","event"]:
@@ -278,7 +269,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                                 json_message["data"] = res["data"]
 
-                                
+
                                 #if _actn == "globalpath":
                                     # if _dtlActn == "planwrite":
                                     #     json_message_edge = dict()
@@ -393,6 +384,8 @@ if __name__ == "__main__":
     _pub_init_topic = _config['MQTT']['PUB_INIT_TOPIC']
     _pub_edgenode_topic = _config['MQTT']['PUB_EDGENODE_TOPIC']
 
+    _kafka_broker = _config['KAFKA']['KAFKA_BROKER']
+    _kafka_port = _config['KAFKA']['KAFKA_PORT']
     #_edgeid = _config['APP']['EDGEID'] 
     #_edgety = _config['APP']['EDGETY'] 
     
@@ -400,8 +393,17 @@ if __name__ == "__main__":
     create_rotating_log(full_path, _config['LOGGER'])
     
     HOST1, PORT1 = _host1, _port1
+    
+    KAFKA_BROKER = f'{_kafka_broker}:{_kafka_port}'
+
+    producer_config = {'bootstrap.servers': KAFKA_BROKER}
+    producer = Producer(producer_config)
+
+    consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
+    consumer = Consumer(consumer_config)
+    consumer.subscribe(['special'])
+    
     try:
-        
         server1 = ThreadedTCPRequestHandler((socket.gethostbyname(HOST1), PORT1), MyTCPHandler1)
     except ValueError:
         sys.exit()

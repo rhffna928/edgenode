@@ -191,7 +191,7 @@ if __name__ == "__main__":
     create_rotating_log(full_path, _config['LOGGER'])
 
     consumer = VehicleDataConsumer(
-        bootstrap_servers='192.168.10.101:9092',
+        bootstrap_servers='172.30.1.20:9092',
         group_id=random.randint(0, 100)
     )
     consumer.connect(['connect'])

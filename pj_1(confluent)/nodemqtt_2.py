@@ -35,19 +35,6 @@ file_encoding = 'utf-8'
 send_encoding = 'CP949'
 recv_encoding = 'CP949'
 
-# Kafka Producer 설정
-producer_config = {'bootstrap.servers': '192.168.10.101:9092'}
-producer = Producer(producer_config)
-# Kafka Consumer 설정
-consumer_config = {
-    'bootstrap.servers': '192.168.10.101:9092',
-    'group.id': random.randint(0, 100),
-    'auto.offset.reset': 'latest',
-    'enable.auto.commit': False
-}
-consumer = Consumer(consumer_config)
-consumer.subscribe(['connect'])
-
 # JVM 시작
 jpype.startJVM()
 jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
@@ -722,6 +709,9 @@ if __name__ == "__main__":
     _logger_interval = _config['LOGGER']['LOG_INTERVAL']
     _logger_backupcount = _config['LOGGER']['LOG_BACKUPCOUNT']
 
+    _kafka_broker = _config['KAFKA']['KAFKA_BROKER']
+    _kafka_port = _config['KAFKA']['KAFKA_PORT']
+
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])
 
@@ -738,7 +728,21 @@ if __name__ == "__main__":
     mqtt = Mqtt()
     mqtt.setLogger(logger)
     mqtt.ready(_mqhost, _mqport, _edgeid, _edgety, _topic_subs_base, _pub_init_topic, _pub_edgenode_topic)
-
+    
+    # Kafka Producer 설정
+    KAFKA_BROKER = f'{_kafka_broker}:{_kafka_port}'
+    producer_config = {'bootstrap.servers': KAFKA_BROKER}
+    producer = Producer(producer_config)
+    # Kafka Consumer 설정
+    consumer_config = {
+        'bootstrap.servers': KAFKA_BROKER,
+        'group.id': random.randint(0, 100),
+        'auto.offset.reset': 'latest',
+        'enable.auto.commit': False
+    }
+    consumer = Consumer(consumer_config)
+    consumer.subscribe(['connect'])
+    
     try:
         # MQTT 클라이언트 시작
         mqtt_thread = threading.Thread(target=mqtt.start, args=(subcribes, False))
