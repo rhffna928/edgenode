@@ -28,4 +28,5 @@
 ### Edge-Node 컨테이너화 구성
 ![image](https://github.com/user-attachments/assets/c7f2e3e4-53b4-462b-b5cb-b387fcb23cb7)
 
+![image](https://github.com/user-attachments/assets/9c264833-79d7-4850-9551-a8f2b90ab2b3)
 
