@@ -187,11 +187,15 @@ if __name__ == "__main__":
     _config = configparser.ConfigParser()
     _config.read(CONFIG, encoding=file_encoding) # definition.py에 등록된 config.ini
     
+    _kafka_broker = _config['KAFKA']['KAFKA_BROKER']
+    _kafka_port = _config['KAFKA']['KAFKA_PORT']
+    KAFKA_BROKER = f'{_kafka_broker}:{_kafka_port}'
+    
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])
 
     consumer = VehicleDataConsumer(
-        bootstrap_servers='172.30.1.20:9092',
+        bootstrap_servers=KAFKA_BROKER,
         group_id=random.randint(0, 100)
     )
     consumer.connect(['connect'])
