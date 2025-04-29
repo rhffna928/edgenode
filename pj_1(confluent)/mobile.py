@@ -418,7 +418,11 @@ if __name__ == "__main__":
     _logger_interval = _config['LOGGER']['LOG_INTERVAL']
     _logger_backupcount = _config['LOGGER']['LOG_BACKUPCOUNT']
 
-
+    _kafka_broker = _config['KAFKA']['KAFKA_BROKER']
+    _kafka_port = _config['KAFKA']['KAFKA_PORT']
+    
+    KAFKA_BROKER = f'{_kafka_broker}:{_kafka_port}'
+    
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])
 

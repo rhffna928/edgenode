@@ -403,14 +403,15 @@ class Mqtt:
                         json_message["header"] = resheader
 
                         if _dtlActn == "planwrite":
-                            send_direction = Constant.EDGE_EDGEHUB
+                            send_direction = Constant.EDGE
+                            decoded_data = reqdata
+                            
+                            resdata4edge = decoded_data
                             ret_data = dict({'resultCd': 0, 'resultMssage': "globalpath write 성공"})   
                             resdata_string = str(ret_data)
                             
                             send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, resdata_string)
-                            resdata = str(send_data)
-                            decoded_data = jvm_msg_encrypt_class.decode(_timestamp, reqdata)
-                            resdata4edge = decoded_data
+                            resdata = str(send_data)                           
                     elif _actn == "event":
                         send_direction = Constant.EDGE
                         decoded_data = jvm_msg_encrypt_class.decode(_timestamp, reqdata)
@@ -442,6 +443,7 @@ class Mqtt:
             logging.info("#1-1 edgeHub로 보낼 메시지 {0}->{1}\n {2}".format(_strtpnt_res, _dstn_res, send_message))
 
         elif send_direction == Constant.EDGE or send_direction == Constant.EDGE_EDGEHUB:
+            
             json_message_edge = dict()
             json_message_edge["header"] = dict()
             json_message_edge["header"]["command"] = _command
@@ -462,7 +464,7 @@ class Mqtt:
                 logging.info("#1 DATA 인/디코드 실행 시간: {0}ms \n 보낼 메시지 : {1}".format(execution_time, data_message))
 
                 if send_data == "":
-                    json_message_edge["data"] = ""
+                    json_message_edge["data"] = "123"
                 else:
                     json_message_edge["data"] = json.loads(str(send_data), strict=True)
                 
@@ -692,8 +694,10 @@ if __name__ == "__main__":
     _command_file_path = _config['APP']['CMD_FILE']
     #_host1 = _config['SOCKET']['SERVER_HOST1']
     #_port1 = int(_config['SOCKET']['SERVER_PORT1'])
+    
     #_host2 = _config['SOCKET']['SERVER_HOST2']
     #_port2 = int(_config['SOCKET']['SERVER_PORT2'])
+    
     _mqhost = _config['MQTT']['BROKER_HOST']
     _mqport = int(_config['MQTT']['BROKER_PORT'])
     _subscribes = _config['MQTT']['TOPIC_SUBS']
@@ -759,7 +763,7 @@ if __name__ == "__main__":
         # 스레드 종료 대기
         mqtt_thread.join()
         kafka_thread.join()
-    except:
+    except Exception as e:
         consumer.commit()
         logger.exception("서비스 실행 실패...")
         sys.exit()
