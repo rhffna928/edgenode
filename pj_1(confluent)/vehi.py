@@ -114,8 +114,8 @@ class VehicleDataConsumer:
             header_repack["dstn"] = "H"
 
             header_repack["userId"] = ""
-            header_repack["edgeId"] = self.edgeId
-            header_repack["edgeTy"] = self.edgeTy
+            header_repack["edgeId"] = "\""+self.edgeId +"\""
+            header_repack["edgeTy"] = "\""+self.edgeTy +"\""
             
             new_timestamp = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
 
@@ -168,10 +168,8 @@ class VehicleDataConsumer:
                     if _actn in ["status", "vehicle"]:
                         if _dtlActn == "info":
                             self.vehicle_info = data["data"]
-                            #print(data["data"])
                         elif _dtlActn == "position":
                             self.vehicle_location = data["data"]
-                            self.data_merge()   
 
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
@@ -193,7 +191,7 @@ if __name__ == "__main__":
     
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])
-
+    v_dataConsumer = VehicleDataConsumer
     consumer = VehicleDataConsumer(
         bootstrap_servers=KAFKA_BROKER,
         group_id=random.randint(0, 100)
