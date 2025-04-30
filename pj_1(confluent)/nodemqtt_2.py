@@ -403,7 +403,7 @@ class Mqtt:
                         json_message["header"] = resheader
 
                         if _dtlActn == "planwrite":
-                            send_direction = Constant.EDGE
+                            send_direction = Constant.EDGE_EDGEHUB
                             decoded_data = reqdata
                             
                             resdata4edge = decoded_data
@@ -442,7 +442,7 @@ class Mqtt:
             self.pubHub4Node(send_message)
             logging.info("#1-1 edgeHub로 보낼 메시지 {0}->{1}\n {2}".format(_strtpnt_res, _dstn_res, send_message))
 
-        elif send_direction == Constant.EDGE or send_direction == Constant.EDGE_EDGEHUB:
+        if send_direction == Constant.EDGE or send_direction == Constant.EDGE_EDGEHUB:
             
             json_message_edge = dict()
             json_message_edge["header"] = dict()
@@ -464,7 +464,7 @@ class Mqtt:
                 logging.info("#1 DATA 인/디코드 실행 시간: {0}ms \n 보낼 메시지 : {1}".format(execution_time, data_message))
 
                 if send_data == "":
-                    json_message_edge["data"] = "123"
+                    json_message_edge["data"] = ""
                 else:
                     json_message_edge["data"] = json.loads(str(send_data), strict=True)
                 
