@@ -109,7 +109,7 @@ class TractorConsumer:
             if data['header']['command'] == "70300":
                 
                 snake = self.gbutil.tosnake_dictname(data["data"])
-
+                #print(data["data"])
                 #logging.info(f"변환된 snake case 데이터: {snake}")
                 db_in_datas = self.gbutil.dictToSql(snake)
                 db_in_datas['VEHICLE_ID'] = "\""+data['header']['edgeId']+"\""

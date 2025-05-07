@@ -431,7 +431,8 @@ class Mqtt:
         resheader["strtpnt"] = _strtpnt_res
         resheader["dstn"] = _dstn_res        
 
-        if send_direction == Constant.EDGEHUB or send_direction == Constant.EDGE_EDGEHUB:   
+        if send_direction == Constant.EDGEHUB or send_direction == Constant.EDGE_EDGEHUB:
+            
             json_message["header"] = resheader
             try:
                 json_message["data"] = resdata
