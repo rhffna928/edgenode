@@ -198,7 +198,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                         try:
                             res= json.loads(str(data))
-
+                            print(res)
                             edge_command = (res["command"])
                             print(f"edge_command : {edge_command}")
                             try:
