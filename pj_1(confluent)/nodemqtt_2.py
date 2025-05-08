@@ -614,7 +614,6 @@ class Mqtt:
                     
                     send_message = json.dumps(json_message_edge, ensure_ascii=False)
 
-
                     sendAll(client_sockets_1, send_message)
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                 elif _actn in ["tractor", "cls"]:

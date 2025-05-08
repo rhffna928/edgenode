@@ -1,0 +1,5 @@
+2025-05-08 09:21:29,774 - INFO - [hubmqttsrv_v2.py:1105] logger path /home/nmone/mk/python/kafka/egnode/pj_1(confluent)/logs/hubmqttsrv.log
+2025-05-08 09:21:30,124 - INFO - [hubmqttsrv_v2.py:187] 구독토픽 추가 [edgeplatform/init]
+2025-05-08 09:21:30,124 - INFO - [hubmqttsrv_v2.py:187] 구독토픽 추가 [edgeplatform/node/#]
+2025-05-08 09:21:30,125 - INFO - [hubmqttsrv_v2.py:187] 구독토픽 추가 [edgeplatform/ctrlsub/#]
+2025-05-08 09:21:30,133 - INFO - [hubmqttsrv_v2.py:121] connected OK
