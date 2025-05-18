@@ -101,7 +101,7 @@ class VehicleDataConsumer:
     def data_merge(self):
         """스레드 실행메소드"""
         while(True):
-            time.sleep(2)
+            time.sleep(1)
             now = datetime.datetime.now()
 
             # 공통정보, 위치 머지한값 보내지
