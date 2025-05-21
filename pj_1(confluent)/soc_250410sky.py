@@ -57,7 +57,7 @@ def sendDisconnectAll(client_sockets):
     client_sockets.clear()
 
 def sendAll(client_sockets, msg):
-    msg += '\r\n';
+    msg += '\r\n'
 
     for client in client_sockets:
         conn = client[0]

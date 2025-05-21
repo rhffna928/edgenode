@@ -299,7 +299,7 @@ class Mqtt:
             now = datetime.datetime.now()
             end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
-            delay_time = (now - start_time) * 1000
+            delay_time = (now - start_time).total_seconds() * 1000
             logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: {0}ms , ({1} - {2})".format(delay_time, now, start_time))
 
             _cmd_req = _cmd

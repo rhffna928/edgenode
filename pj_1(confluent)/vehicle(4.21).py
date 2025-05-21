@@ -140,8 +140,8 @@ class VehicleDataConsumer:
                 except Exception as e:
                     print(e)
                 #logging.info("************** work_doing_monitor ********************")
-            # self.vehicle_info = None
-            # self.vehicle_location = None
+            self.vehicle_info = None
+            self.vehicle_location = None
 
     def run(self):
         try:
