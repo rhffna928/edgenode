@@ -266,8 +266,8 @@ class Mqtt:
                 if _cmd == "heartbeat":
                     continue
 
-                #end_time = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
-                start_time = datetime.datetime.strptime(_timestamp, '%Y:%m:%d-%H:%M:%S.%f')
+                #end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+                start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
                 delay_time = (now - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
                 start_str = str(now)
                 end_str = str(start_time)

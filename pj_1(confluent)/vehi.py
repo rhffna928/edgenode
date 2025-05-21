@@ -114,8 +114,8 @@ class VehicleDataConsumer:
             header_repack["dstn"] = "H"
 
             header_repack["userId"] = ""
-            header_repack["edgeId"] = "\""+self.edgeId +"\""
-            header_repack["edgeTy"] = "\""+self.edgeTy +"\""
+            header_repack["edgeId"] = "\""+self.edgeId+"\""
+            header_repack["edgeTy"] = "\""+self.edgeTy+"\""
             
             new_timestamp = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
 
@@ -159,7 +159,7 @@ class VehicleDataConsumer:
 
                 try:
                     data = json.loads(msg.value())
-                    
+                    logging.info(f"special 데이터 @@@@@@@@@@@ {data}")
                     self.edgeId = data["header"]["edgeId"]
                     self.edgeTy = data["header"]["edgeTy"]
                     _actn = data["header"]["actn"]
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         bootstrap_servers=KAFKA_BROKER,
         group_id=random.randint(0, 100)
     )
-    consumer.connect(['connect'])
+    consumer.connect(['special'])
     consumer.run()
     try:
         run = threading.Thread(target=VehicleDataConsumer.run, args=())

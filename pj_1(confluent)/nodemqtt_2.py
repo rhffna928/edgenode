@@ -66,8 +66,7 @@ def sendString(conn, msg):
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
-    
-    
+
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
     _logger_when = _config['LOG_WHEN']
@@ -147,7 +146,7 @@ class Mqtt:
             _json_message = dict()
 
             now = datetime.datetime.now()
-            now_str = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
+            now_str = now.strftime("%Y-%m-%d %H:%M:%S.%f")
 
             _header["cmd"] = "req"
             _header["actn"] = "init"
@@ -298,9 +297,9 @@ class Mqtt:
             _command = str(res["header"]["command"])
 
             now = datetime.datetime.now()
-            end_time = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
-            start_time = datetime.datetime.strptime(_timestamp, '%Y:%m:%d-%H:%M:%S.%f')
-            delay_time = (now - start_time) * 1000
+            end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            delay_time = (now - start_time).total_seconds() * 1000
             logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: {0}ms , ({1} - {2})".format(delay_time, now, start_time))
 
             _cmd_req = _cmd
@@ -407,7 +406,7 @@ class Mqtt:
                             decoded_data = reqdata
                             
                             resdata4edge = decoded_data
-                            ret_data = dict({'resultCd': 0, 'resultMssage': "globalpath write 성공"})   
+                            ret_data = dict({'resultCd': 0, 'resultMssage': "globalpath write 성공"})
                             resdata_string = str(ret_data)
                             
                             send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, resdata_string)
@@ -449,6 +448,7 @@ class Mqtt:
             json_message_edge["header"] = dict()
             json_message_edge["header"]["command"] = _command
             json_message_edge["header"]["VID"] = _edgeId
+            json_message_edge["header"]["edgeId"] = _edgeId
             json_message_edge["header"]["timestamp"] = _timestamp
             json_message_edge["header"]["edgeTy"] = _edgeTy
 
@@ -495,13 +495,10 @@ class Mqtt:
             header_repack["dtlActn"] = str("common")
             header_repack["strtpnt"] = "N"
             header_repack["dstn"] = "H"
-
             header_repack["userId"] = ""
             header_repack["edgeId"] = self.edgeId
             header_repack["edgeTy"] = self.edgeTy
-            
-            new_timestamp = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
-
+            new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
             header_repack["timestamp"] = new_timestamp    
             header_repack["command"] = "60320"
 
@@ -528,7 +525,6 @@ class Mqtt:
                 mqtt.pubHub4Node(send_message)
             self.vehicle_info = None
             self.vehicle_location = None
-      
         
     def process_kafka_message(self, message):
         try:
@@ -557,8 +553,8 @@ class Mqtt:
             _command = msg_data["header"]["command"]
             json_message = dict()
             
-            end_time = now.strftime("%Y:%m:%d-%H:%M:%S.%f")
-            start_time = datetime.datetime.strptime(_timestamp, '%Y:%m:%d-%H:%M:%S.%f')
+            end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
             logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(round((delay_time),4), now, start_time))
             logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
@@ -570,6 +566,8 @@ class Mqtt:
                     if _dtlActn == "info":
                         self.vehicle_info = msg_data["data"]
                     elif _dtlActn == "position":
+                        self.vehicle_location = msg_data["data"]
+                    elif _dtlActn == "location":
                         self.vehicle_location = msg_data["data"]
                 elif _actn == "alarm":
                     json_message["header"] = msg_data["header"]                

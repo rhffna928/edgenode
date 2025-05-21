@@ -189,7 +189,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 else:
                     with self.lock: 
                         now = datetime.datetime.now()
-                        data = buf[0:index +1]
+                        data = buf[0:index + 1]
                         data = data.replace("\n", '')
                         buf = buf[index + 1:]
 
@@ -197,7 +197,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                         res_repack = dict()
 
                         try:
-                            res= json.loads(str(data))
+                            res = json.loads(str(data))
                             print(res)
                             edge_command = (res["command"])
                             print(f"edge_command : {edge_command}")
