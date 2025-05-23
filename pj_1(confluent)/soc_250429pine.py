@@ -239,8 +239,8 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             _edgeTy = str(res_repack["header"]["edgeTy"])
                             _timestamp = str(res_repack["header"]["timestamp"])
                             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')                        
-                            delay_time = (now - start_time).total_seconds() * 1000 # 밀리세컨드 단위로 변환
-                            logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time: {0}ms, ({1} - {2})".format(round(delay_time,4), now, start_time))
+                            delay_time = (now - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
+                            logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time : {0}ms, ({1} - {2})".format(round(delay_time,4), now, start_time))
 
                             _cmd_req = _cmd
                             _strtpnt_res = _dstn
@@ -250,9 +250,9 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             resdata = dict()
                             send_direction = Constant.NONE
 
-                            logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
+                            logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format(_cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
 
-                            if _cmd in ["rep", "req", "heartbeat","event"]:
+                            if _cmd in ["rep", "req", "heartbeat", "event"]:
 
                                 if _actn == "init":
                                     if _strtpnt == "M":
