@@ -7,7 +7,7 @@ jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
 
 _edgeId = "STSW000001"
 _timestamp = datetime.datetime.now().strftime("%Y:%m:%d-%H:%M:%S.%f")[:-3]
-data_message = "WT2vIhz5G1rJXJ6gLqBvIS42U5galM0DTjyePz3SrAl20aLDiM5xQSBDWttJ3k4c0lzsPLORg794BP2U1J3oVg=="
+data_message = "Pp/NSBnuDeQ1dBy8HDpJHvS4MHCYc3zmCC18nkTrcGxnlD2JpohTALGXr0aaCDMJNL8FEjktdHLMkx0SRpgfM0q2QVuQd6ComxH5hflnic3EbZoQDPoOwsL81PMtLeEQn+LrvYxJcPcufF8VvEo/1A=="
 
 try:
     sd = jvm_msg_encrypt_class.decode(_timestamp, _edgeId, str(data_message))

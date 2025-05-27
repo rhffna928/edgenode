@@ -5,7 +5,7 @@ services:
   soc:
     build: .
     ports:
-      - "5050:5050"
+      - "6000:6000"
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
@@ -51,7 +51,18 @@ services:
       - KAFKA_BROKER=daa-kafka1:19092
       - ZOOKEEPER_CONNECT=daa-zoo1:2888
     command: python vehicle(4.21).py 
-  trac:
+  # trac:
+  #   build: .
+  #   volumes:
+  #     - ./logs:/app/logs
+  #     - ./sqlite_db:/app/sqlite_db
+  #   networks:
+  #     - daa-kafka-cluster-network      
+  #   environment:
+  #     - KAFKA_BROKER=daa-kafka1:19092
+  #     - ZOOKEEPER_CONNECT=daa-zoo1:2888
+  #   command: python trac.py 
+    stsw:
     build: .
     volumes:
       - ./logs:/app/logs
@@ -61,7 +72,7 @@ services:
     environment:
       - KAFKA_BROKER=daa-kafka1:19092
       - ZOOKEEPER_CONNECT=daa-zoo1:2888
-    command: python trac.py 
+    command: python stsw.py 
 
 networks:
   daa-kafka-cluster-network:

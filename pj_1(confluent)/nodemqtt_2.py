@@ -154,7 +154,7 @@ class Mqtt:
             _header["strtpnt"] = "N"
             _header["dstn"] = "H"
             _header["edgeId"] = self.edgeId
-            _header["userId"] = "1"
+            _header["userId"] = "12345"
             _header["command"] = "00001"
             _header["edgeTy"] = self.edgeTy
             _header["timestamp"] = now_str

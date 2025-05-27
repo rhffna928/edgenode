@@ -173,9 +173,9 @@ class PostgreController:
 
             for idx, key in enumerate(condition['and_where']):
                 if idx == 0:
-                    stmtWhere += key + " = \"" + condition['and_where'][key] + "\" "
+                    stmtWhere += key + " = \'" + condition['and_where'][key] + "\' "
                 else:
-                    stmtWhere += " AND " + key + " = \"" + condition['and_where'][key] + "\" "
+                    stmtWhere += " AND " + key + " = \'" + condition['and_where'][key] + "\' "
             
             stmtWhere += " ) "
 
@@ -199,9 +199,9 @@ class PostgreController:
 
             for idx, key in enumerate(condition['or_where']):
                 if idx == 0:
-                    stmtWhere += key + " = \"" + condition['or_where'][key] + "\" "
+                    stmtWhere += key + " = \'" + condition['or_where'][key] + "\' "
                 else:
-                    stmtWhere += " OR " + key + " = \"" + condition['or_where'][key] + "\" "
+                    stmtWhere += " OR " + key + " = \'" + condition['or_where'][key] + "\' "
             stmtWhere += " ) "
 
         """
@@ -269,7 +269,7 @@ class PostgreController:
         """
         stmtLimit = ""
         if condition.get('limit') and condition.get('offset'):
-            stmtLimit += " LIMIT " + condition['offset'] + " ," + condition['limit']
+            stmtLimit += " OFFSET " + condition['offset'] + " LIMIT " + condition['limit']
         else:
             if condition.get('limit'):
                 stmtLimit += " LIMIT " + condition['limit']

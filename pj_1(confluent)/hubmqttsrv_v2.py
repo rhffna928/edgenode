@@ -21,7 +21,7 @@ from logging.handlers import TimedRotatingFileHandler
 import pandas as pd
 
 from constant import Constant
-from MysqlController import MysqlController
+#from MysqlController import MysqlController
 from PostgreController import PostgreController
 
 from GBUtil import GBUtil
@@ -43,33 +43,23 @@ CONFIG = Path(ROOT_DIR) / 'hubmqttsrv.ini' # mqtt.ini 설정
 class Mqtt:
     logger = None
     
-
     def __init__(self):
         self.data_queue = queue.Queue()
         # Create threads
         self.threads = []
-
         self.host = None
         self.port = None
         self.recvmessage = None
         self.onmessage_topic = None
-
         self.strtpnt = None
         self.dstn = None
-
         self.PUB_INIT_TOPIC = None
         self.PUB_EDGENODE_TOPIC = None
         self.PUB_CTRLCENTER_TOPIC = None
-
         self.client_list = dict()
-
         self.subcribes = None
-
-
         self.dbctrl = None
-
         self.gbutil = GBUtil()
-
 
         # JVM 시작
         jpype.startJVM()
@@ -82,7 +72,6 @@ class Mqtt:
 
         # 자바 클래스 로드
         self.jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
-
 
         client_id = f'publish-{random.randint(0, 1000)}'
         # Old
@@ -327,7 +316,7 @@ class Mqtt:
                                 db_conditions = {'tablename': 'public.\"GLOBAL_PLAN_HISTORY\"'}
                                 # 추가할 필드 추가
                                 db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[0]
+                                db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
                                         
                                 result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                                 
@@ -489,7 +478,7 @@ class Mqtt:
                                     db_conditions = {'tablename': 'public.\"VEHICLE_ING_INFO\"'}
                                     # 추가할 필드 추가
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                    db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[0]
+                                    db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
                                          
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                             elif _actn == "tractor":
@@ -804,32 +793,28 @@ class Mqtt:
                             """
 
                             if _userId  != "":
-                                db_conditions = {'tablename': 'vehicles as a'}
-                                db_conditions['select'] = "a.edge_exp, a.edge_id, a.edge_ty"
-                                db_conditions['orderby'] = " order by edge_id "
+                                db_conditions = {'tablename': '"VEHICLE_LIST" as a'}
+                                db_conditions['select'] = 'a."VEHICLE_ID", a."VEHICLE_TYPE"'
+                                db_conditions['orderby'] = 'order by a."VEHICLE_ID"'
                                 db_conditions['and_where'] = {}
-                                db_conditions['and_where']['user_id'] = _userId
-                                db_conditions['offset'] = "1"
+                                db_conditions['and_where']['"USER_ID"'] = _userId
+                                db_conditions['offset'] = "0"
                                 db_conditions['limit'] = "10"
                                 
                                 result = self.dbctrl.base_select(db_conditions)
-                                #print(result['datas'])
+                                #print("@@@@@@@@@@@@@@@@@@@@@"+result['datas'])
                                 data_len = len(result['datas'])
-                                #print(data_len)
-                                #pd_dt = pd.DataFrame(result['datas'])
-                                #print(pd_dt)
-
-                            """ 
-                            # DB  edgeId값이 있으면 edgeId로 UserId가져와서 edgeId목록 가져온다. 
-                            # ####################################################
-                            """
-                            if _edgeId != "":
+                                #print("@@@@@@@@@@@@@@@@@@@@@"+data_len)
+                                # pd_dt = pd.DataFrame(result['datas'])
+                                # print(pd_dt)
+                            elif _edgeId != "":
                                 db_conditions = {}
-                                db_conditions['select_count'] = "SELECT count(*) FROM vehicles WHERE user_id = (SELECT user_id FROM vehicles WHERE edge_id='"+_edgeId+"')"
-                                db_conditions['select_string'] = "SELECT edge_exp, edge_id, edge_ty FROM vehicles WHERE user_id = (SELECT user_id FROM vehicles WHERE edge_id='"+_edgeId+"')"
+                                db_conditions['select_count'] = 'SELECT count(*) FROM "VEHICLE_LIST" WHERE "USER_ID" = (SELECT "USER_ID" FROM  "VEHICLE_LIST" WHERE "VEHICLE_ID"='+_edgeId+')'
+                                                                
+                                db_conditions['select_string'] = 'SELECT "VEHICLE_ID", "VEHICLE_NAME", "VEHICLE_TYPE" FROM "VEHICLE_LIST" WHERE "USER_ID"  = (SELECT "USER_ID"  FROM "VEHICLE_LIST" WHERE "VEHICLE_ID"='+_edgeId+')'
                                 #print(db_conditions)
-                                result = self.dbctrl.base_select(db_conditions)
-                                #print(result2['datas'])
+                                result2 = self.dbctrl.base_select(db_conditions)
+                                print(result2['datas'])
 
                             """
                             # DB Insert
@@ -840,12 +825,9 @@ class Mqtt:
                             db_in_datas['url'] = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                             db_in_datas['hanjakey'] = _initId + ""
                             db_in_datas['sitename'] = _userId+ ""
-
                 
                             db_conditions = {'tablename': 'levelhanjalist'}
                             self.dbctrl.base_insert(db_conditions, db_in_datas)
-                            
-                            
 
                             # DB Update
                             # ####################################################
@@ -877,7 +859,6 @@ class Mqtt:
                                     #print(attribute, value) # example usage
 
                                 db_edgeList.append(atts)
-
                             
                             """
                             db_edgeList.append(("트랙터1", "123456ABCD"))
@@ -889,7 +870,8 @@ class Mqtt:
                             RES_TOPIC = self.PUB_EDGENODE_TOPIC + "/" + _initId
 
                             #resdata = dict({'resultCd': 0, 'resultMssage': "init 성공 응답 22", 'userId':db_userId, 'edgeList':result['datas']})   
-                            resdata = dict({'resultCd': 0, 'resultMssage': "init 성공 응답 22", 'userId':db_userId, 'edgeList':db_edgeList})   
+                            resdata = dict({'resultCd': 0, 'resultMssage': "init 성공 응답 22", 'userId':db_userId, 'edgeList':db_edgeList})
+                            
                             resdata_string = json.dumps(resdata, ensure_ascii=False)
 
                             #logging.info("{0}".format(resdata_string))
