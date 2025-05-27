@@ -99,10 +99,9 @@ class StreetSweeperConsumer:
             db_in_datas['VEHICLE_ID'] = f"\"{data['header']['edgeId']}\""
             db_conditions = {'tablename': '"STREET_SWEEPER_INFO"'}
             
-            logging.debug(f"DB 입력 데이터: {db_in_datas}")
             try:
                 result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)
-                logging.info(f"cls 데이터 처리 성공: {result}")
+                logging.info(f"cls 데이터 처리 성공: {db_in_datas.keys()}")
                 return result
             except Exception as e:
                 logging.error(f"데이터 처리 중 오류 발생: {e}")
@@ -133,7 +132,6 @@ class StreetSweeperConsumer:
                     if data["header"]["actn"] == "cls":
                         result = self.process_cls_data(data)
                     
-                    
                 except json.JSONDecodeError as e:
                     logging.error(f"JSON 디코딩 오류: {e}")
                 
@@ -157,4 +155,3 @@ if __name__ == "__main__":
     consumer = StreetSweeperConsumer(bootstrap_servers=KAFKA_BROKER)
     consumer.connect(['connect'])
     consumer.run()
-    consumer.commit()

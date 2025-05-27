@@ -525,7 +525,17 @@ class Mqtt:
                 mqtt.pubHub4Node(send_message)
             self.vehicle_info = None
             self.vehicle_location = None
-        
+            
+    def encoded_message(msg_data, _timestamp, _edgeId):
+        """메시지 인코딩"""
+        json_message = dict()
+        json_message["header"] = msg_data["header"]
+        data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
+        send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
+        json_message["data"] = str(send_data)
+        send_message = json.dumps(json_message, ensure_ascii=False)
+        return send_message
+
     def process_kafka_message(self, message):
         try:
             if not message.value():
@@ -570,25 +580,13 @@ class Mqtt:
                     elif _dtlActn == "location":
                         self.vehicle_location = msg_data["data"]
                 elif _actn == "alarm":
-                    json_message["header"] = msg_data["header"]                
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
-                    json_message["data"] = str(send_data)                    
-                    send_message = json.dumps(json_message, ensure_ascii=False)         
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                     self.pubHub4Node(send_message)
                 elif _actn == "event":
-                    json_message["header"] = msg_data["header"]                
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
-                    json_message["data"] = str(send_data)                    
-                    send_message = json.dumps(json_message, ensure_ascii=False)         
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)    
                     self.pubHub4Node(send_message)
                 elif _actn == "globalpath":
-                    json_message["header"] = msg_data["header"]                
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
-                    json_message["data"] = str(send_data)                    
-                    send_message = json.dumps(json_message, ensure_ascii=False)         
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)     
                     self.pubHub4Node(send_message)
                     
                     json_message_edge = dict()
@@ -615,33 +613,17 @@ class Mqtt:
                     sendAll(client_sockets_1, send_message)
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                 elif _actn in ["tractor", "cls"]:
-                    json_message["header"] = msg_data["header"]                
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))                    
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)                    
-                    json_message["data"] = str(send_data)                    
-                    send_message = json.dumps(json_message, ensure_ascii=False)                    
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)                
                     self.pubHub4Node(send_message)
             elif _cmd == "req":
                 if _actn == "init":
-                    json_message["header"] = msg_data["header"]
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
-                    json_message["data"] = str(send_data)
-                    send_message = json.dumps(json_message, ensure_ascii=False)
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                     self.pubHub4Init(send_message)
                 elif _actn == "globalpath":
-                    json_message["header"] = msg_data["header"]
-                    data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
-                    send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
-                    json_message["data"] = str(send_data)
-                    send_message = json.dumps(json_message, ensure_ascii=False)
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                     self.pubHub4Node(send_message)
             elif _cmd == "event":
-                json_message["header"] = msg_data["header"]
-                data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
-                send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
-                json_message["data"] = str(send_data)
-                send_message = json.dumps(json_message, ensure_ascii=False)
+                send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                 self.pubHub4Node(send_message)
             elif _cmd == "heartbeat":
                 send_message = json.dumps(msg_data, ensure_ascii=False)

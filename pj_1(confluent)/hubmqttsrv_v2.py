@@ -266,7 +266,7 @@ class Mqtt:
                 decoded_data = self.jvm_msg_encrypt_class.decode(_timestamp, _edgeId, res["data"])
                 end_time = time.time()
 
-                execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
+                execution_time = (end_time - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
                 logging.info("\n")
                 logging.info("\t 운영 적용시 이건 꾝 주석처리 하세요.")
                 logging.info("\t DATA 디코드 실행 시간: {0}ms".format(execution_time))
