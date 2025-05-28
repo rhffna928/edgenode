@@ -62,7 +62,7 @@ def sendAll(client_sockets, msg):
     for client in client_sockets:
         conn = client[0]
         try:
-            conn.sendall(msg.encode(encoding=send_encoding))
+            conn.sendall(msg.encode(encoding=file_encoding))
             logging.info(f"메시지 전송 성공: {client[1]}")  # 전송 성공 로그
         except Exception as e:
             logging.error(f"메시지 전송 실패: {client[1]}, 오류: {e}")  # 전송 실패 로그
@@ -189,7 +189,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 else:
                     with self.lock: 
                         now = datetime.datetime.now()
-                        data = buf[0:index +2]
+                        data = buf[0:index +1]
                         data = data.replace("\n", '')
                         buf = data.replace(data, '')
 

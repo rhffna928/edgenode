@@ -391,7 +391,6 @@ if __name__ == "__main__":
 
     _command_file_path = _config['APP']['CMD_FILE'] # CMD_FILE
     
-
     _host1 = _config['SOCKET']['SERVER_HOST1'] # Server IP
     _port1 = int(_config['SOCKET']['SERVER_PORT1']) # Server Port
 
@@ -444,7 +443,18 @@ if __name__ == "__main__":
         # print "Error code: %s \nError Message: %s"\   % (str(msg[0]), msg[1])
         sys.exit()
 
-
+    # Kafka Producer 설정
+    KAFKA_BROKER = f'{_kafka_broker}:{_kafka_port}'
+    producer_config = {'bootstrap.servers': KAFKA_BROKER}
+    producer = Producer(producer_config)
+    # Kafka Consumer 설정
+    consumer_config = {
+        'bootstrap.servers': KAFKA_BROKER,
+        'group.id': random.randint(0, 100),
+        'auto.offset.reset': 'latest',
+        'enable.auto.commit': False
+    }
+    
     server_thread2 = threading.Thread(target=server2.serve_forever)
     server_thread2.daemon = True
     server_thread2.start()
