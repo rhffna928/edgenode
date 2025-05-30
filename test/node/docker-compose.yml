@@ -15,7 +15,7 @@ services:
       - KAFKA_BROKER=daa-kafka1:19092
       - ZOOKEEPER_CONNECT=daa-zoo1:2888
       - TZ=Asia/Seoul
-    command: python soc_250429pine.py
+    command: python soc_250429pine2.py
 
   nodemqtt:
     build: .

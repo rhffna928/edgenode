@@ -180,18 +180,20 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 #print(f"data : {data}")
                 if not data:
                     break
-                "\""
+
                 buf += data
-                
+
                 index = buf.find("\n")
                 if index == -1:
                     continue
                 else:
-                    with self.lock: 
+                    with self.lock: \
+                        
+                        
                         now = datetime.datetime.now()
                         data = buf[0:index +1]
                         data = data.replace("\n", '')
-                        buf = data.replace(data, '')
+                        data = data.replace(data, '')
 
                         json_message = dict()
                         res_repack = dict()
