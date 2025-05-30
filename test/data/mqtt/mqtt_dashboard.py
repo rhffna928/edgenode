@@ -26,7 +26,7 @@ def start_mqtt():
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect("localhost", 1883, 60)  # 브로커 주소 및 포트
+    client.connect("223.130.131.234", 1883, 60)  # 브로커 주소 및 포트
     client.loop_forever()
 
 # --- MQTT 리스너 스레드 시작 ---

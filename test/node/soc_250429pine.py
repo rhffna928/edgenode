@@ -181,133 +181,125 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 if not data:
                     break
                 
-                buf += data
-                
-                index = buf.find("\n")
-                if index == -1:
-                    continue
-                else:
-                    with self.lock: 
-                        now = datetime.datetime.now()
-                        data = buf[0:index + 1]
-                        data = data.replace("\n", '')
-                        buf = buf[index + 1:]
+                with self.lock: 
+                    now = datetime.datetime.now()
+                    data = data.replace("\n", '')
 
-                        json_message = dict()
-                        res_repack = dict()
+                    json_message = dict()
+                    res_repack = dict()
 
+                    try:
+                        res = json.loads(str(data))
+                        print(res)
+                        edge_command = (res["command"])
+                        print(f"edge_command : {edge_command}")
                         try:
-                            res = json.loads(str(data))
-                            print(res)
-                            edge_command = (res["command"])
-                            print(f"edge_command : {edge_command}")
-                            try:
-                                cmd_mapping = command_tbl[str(edge_command)]
-                            except KeyError as e:
-                                print(e)
-                                continue
-
-                            header_repack = dict()
-                            header_repack["cmd"] = str(cmd_mapping["cmd"])
-                            header_repack["actn"] = str(cmd_mapping["actn"])
-                            header_repack["dtlActn"] = str(cmd_mapping["dtlActn"])
-
-                            header_repack["strtpnt"] = "E"
-                            header_repack["dstn"] = "N"
-
-                            header_repack["userId"] = ""
-                            self.edgeId = header_repack["edgeId"] = (res["VID"])
-                            self.edgeTy = header_repack["edgeTy"] = (res["edgeTy"])
-                            header_repack["timestamp"] = (res["timestamp"])
-                            header_repack["command"] = edge_command
-
-                            res_repack["header"] = header_repack
-                            res_repack["data"] = res["data"]
-
-                            ########################################################################
-
-                            _command = str(res_repack["header"]["command"])
-                            _cmd = str(res_repack["header"]["cmd"])
-                            _actn = str(res_repack["header"]["actn"])
-                            _dtlActn = str(res_repack["header"]["dtlActn"])
-
-                            _strtpnt = str(res_repack["header"]["strtpnt"])
-                            _dstn = str(res_repack["header"]["dstn"])
-
-                            _userId = str(res_repack["header"]["userId"])
-                            _edgeId = str(res_repack["header"]["edgeId"])
-                            _edgeTy = str(res_repack["header"]["edgeTy"])
-                            _timestamp = str(res_repack["header"]["timestamp"])
-                            start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')                        
-                            delay_time = (now - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
-                            logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time : {0}ms, ({1} - {2})".format(round(delay_time,4), now, start_time))
-
-                            _cmd_req = _cmd
-                            _strtpnt_res = _dstn
-                            _dstn_res = "H"
-
-                            resheader = res_repack["header"]
-                            resdata = dict()
-                            send_direction = Constant.NONE
-
-                            logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format(_cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
-
-                            if _cmd in ["rep", "req", "heartbeat", "event"]:
-
-                                if _actn == "init":
-                                    if _strtpnt == "M":
-                                        _edgeId = _userId
-                                    else:
-                                        _edgeId = _edgeId
-
-                                resheader["cmd"] = _cmd_req
-                                resheader["strtpnt"] = _strtpnt_res
-                                resheader["dstn"] = _dstn_res
-                                resheader["edgeId"] = _edgeId
-
-                                json_message["header"] = resheader
-
-                                json_message["data"] = res["data"]
-
-
-                                #if _actn == "globalpath":
-                                    # if _dtlActn == "planwrite":
-                                    #     json_message_edge = dict()
-
-                                    #     json_message_edge["command"] = edge_command
-                                    #     json_message_edge["VID"] = _edgeId
-                                    #     json_message_edge["timestamp"] = _timestamp
-                                    #     json_message_edge["edgeTy"] = _edgeTy
-
-                                    #     data_message = str(json.dumps(res["data"], ensure_ascii=False))
-                                    #     start_time = time.time()
-
-                                    #     end_time = time.time()
-                                    #     execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
-                                    #     logging.info("#1 DATA 인/디코드 실행 시간: {0}ms".format(execution_time))
-                                        
-                                    #     if data_message == "":
-                                    #         json_message_edge["data"] = ""
-                                    #     else:
-                                    #         json_message_edge["data"] = json.loads(str(data_message), strict=True)
-                                        
-                                    #     send_message = json.dumps(json_message_edge, ensure_ascii=False)
-                                    #     sendAll(client_sockets_1, send_message)
-                                    #     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
-                                send_kafka_msg('connect', message=json_message)
-                                
-                        except json.decoder.JSONDecodeError as err:
-                            logging.exception("json.decoder.JSONDecodeError {0}, [{1}]".format(err, data))
+                            cmd_mapping = command_tbl[str(edge_command)]
+                        except KeyError as e:
+                            print(e)
                             continue
-                        except KeyError as err:
-                            logging.exception("KeyError %s. ", err)
-                            continue
-                        except TypeError as err:
-                            logging.exception("TypeError %s. ", err)
-                            continue
-                        except Exception as err:
-                            logging.exception("Exception %s. ", err)
-                            continue
+
+                        header_repack = dict()
+                        header_repack["cmd"] = str(cmd_mapping["cmd"])
+                        header_repack["actn"] = str(cmd_mapping["actn"])
+                        header_repack["dtlActn"] = str(cmd_mapping["dtlActn"])
+
+                        header_repack["strtpnt"] = "E"
+                        header_repack["dstn"] = "N"
+
+                        header_repack["userId"] = ""
+                        self.edgeId = header_repack["edgeId"] = (res["VID"])
+                        self.edgeTy = header_repack["edgeTy"] = (res["edgeTy"])
+                        header_repack["timestamp"] = (res["timestamp"])
+                        header_repack["command"] = edge_command
+
+                        res_repack["header"] = header_repack
+                        res_repack["data"] = res["data"]
+
+                        ########################################################################
+
+                        _command = str(res_repack["header"]["command"])
+                        _cmd = str(res_repack["header"]["cmd"])
+                        _actn = str(res_repack["header"]["actn"])
+                        _dtlActn = str(res_repack["header"]["dtlActn"])
+
+                        _strtpnt = str(res_repack["header"]["strtpnt"])
+                        _dstn = str(res_repack["header"]["dstn"])
+
+                        _userId = str(res_repack["header"]["userId"])
+                        _edgeId = str(res_repack["header"]["edgeId"])
+                        _edgeTy = str(res_repack["header"]["edgeTy"])
+                        _timestamp = str(res_repack["header"]["timestamp"])
+                        start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')                        
+                        delay_time = (now - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
+                        logging.info("%%%%%%%%%%%% Edge -> EdgeNode delay_time : {0}ms, ({1} - {2})".format(round(delay_time,4), now, start_time))
+
+                        _cmd_req = _cmd
+                        _strtpnt_res = _dstn
+                        _dstn_res = "H"
+
+                        resheader = res_repack["header"]
+                        resdata = dict()
+                        send_direction = Constant.NONE
+
+                        logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format(_cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
+
+                        if _cmd in ["rep", "req", "heartbeat", "event"]:
+
+                            if _actn == "init":
+                                if _strtpnt == "M":
+                                    _edgeId = _userId
+                                else:
+                                    _edgeId = _edgeId
+
+                            resheader["cmd"] = _cmd_req
+                            resheader["strtpnt"] = _strtpnt_res
+                            resheader["dstn"] = _dstn_res
+                            resheader["edgeId"] = _edgeId
+
+                            json_message["header"] = resheader
+
+                            json_message["data"] = res["data"]
+
+
+                            #if _actn == "globalpath":
+                                # if _dtlActn == "planwrite":
+                                #     json_message_edge = dict()
+
+                                #     json_message_edge["command"] = edge_command
+                                #     json_message_edge["VID"] = _edgeId
+                                #     json_message_edge["timestamp"] = _timestamp
+                                #     json_message_edge["edgeTy"] = _edgeTy
+
+                                #     data_message = str(json.dumps(res["data"], ensure_ascii=False))
+                                #     start_time = time.time()
+
+                                #     end_time = time.time()
+                                #     execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
+                                #     logging.info("#1 DATA 인/디코드 실행 시간: {0}ms".format(execution_time))
+                                    
+                                #     if data_message == "":
+                                #         json_message_edge["data"] = ""
+                                #     else:
+                                #         json_message_edge["data"] = json.loads(str(data_message), strict=True)
+                                    
+                                #     send_message = json.dumps(json_message_edge, ensure_ascii=False)
+                                #     sendAll(client_sockets_1, send_message)
+                                #     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
+                            send_kafka_msg('connect', message=json_message)
+                            
+                    except json.decoder.JSONDecodeError as err:
+                        logging.exception("json.decoder.JSONDecodeError {0}, [{1}]".format(err, data))
+                        continue
+                    except KeyError as err:
+                        logging.exception("KeyError %s. ", err)
+                        continue
+                    except TypeError as err:
+                        logging.exception("TypeError %s. ", err)
+                        continue
+                    except Exception as err:
+                        logging.exception("Exception %s. ", err)
+                        continue
             except ConnectionResetError:
                 logger.exception("==> 특장차 ConnectionResetError")
                 break

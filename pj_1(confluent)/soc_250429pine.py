@@ -180,9 +180,9 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 #print(f"data : {data}")
                 if not data:
                     break
-                
+
                 buf += data
-                
+
                 index = buf.find("\n")
                 if index == -1:
                     continue

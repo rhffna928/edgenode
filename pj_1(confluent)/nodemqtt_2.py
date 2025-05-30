@@ -526,14 +526,17 @@ class Mqtt:
             self.vehicle_info = None
             self.vehicle_location = None
             
-    def encoded_message(msg_data, _timestamp, _edgeId):
+    def encoded_message(self, msg_data, _timestamp, _edgeId):
         """메시지 인코딩"""
-        json_message = dict()
-        json_message["header"] = msg_data["header"]
-        data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
-        send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
-        json_message["data"] = str(send_data)
-        send_message = json.dumps(json_message, ensure_ascii=False)
+        try:
+            json_message = dict()
+            json_message["header"] = msg_data["header"]
+            data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
+            send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, data_message)
+            json_message["data"] = str(send_data)
+            send_message = json.dumps(json_message, ensure_ascii=False)
+        except Exception as e:
+            logging.error(f"메시지 인코딩 중 오류 발생: {str(e)}")
         return send_message
 
     def process_kafka_message(self, message):
@@ -613,7 +616,7 @@ class Mqtt:
                     sendAll(client_sockets_1, send_message)
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                 elif _actn in ["tractor", "cls"]:
-                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)                
+                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                     self.pubHub4Node(send_message)
             elif _cmd == "req":
                 if _actn == "init":
@@ -720,9 +723,9 @@ if __name__ == "__main__":
     # Kafka Consumer 설정
     consumer_config = {
         'bootstrap.servers': KAFKA_BROKER,
-        'group.id': random.randint(0, 100),
+        'group.id': random.randint(0, 1000),
         'auto.offset.reset': 'latest',
-        'enable.auto.commit': False
+        'enable.auto.commit': True
     }
     consumer = Consumer(consumer_config)
     consumer.subscribe(['connect'])

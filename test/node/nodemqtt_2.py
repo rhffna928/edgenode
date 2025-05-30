@@ -725,7 +725,7 @@ if __name__ == "__main__":
         'bootstrap.servers': KAFKA_BROKER,
         'group.id': random.randint(0, 100),
         'auto.offset.reset': 'latest',
-        'enable.auto.commit': False
+        'enable.auto.commit': True
     }
     consumer = Consumer(consumer_config)
     consumer.subscribe(['connect'])
