@@ -616,8 +616,10 @@ class Mqtt:
                     sendAll(client_sockets_1, send_message)
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                 elif _actn in ["tractor", "cls"]:
-                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
-                    self.pubHub4Node(send_message)
+                    while(1):
+                        send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
+                        self.pubHub4Node(send_message)
+                    send_message = None
             elif _cmd == "req":
                 if _actn == "init":
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
