@@ -479,7 +479,7 @@ class Mqtt:
                 logging.exception("%s. ", err)
             except Exception as err:                
                 logging.exception("%s. ", err)
-            
+
     def data_merge(self):
         """스레드 실행메소드"""
         while(1):
@@ -506,26 +506,26 @@ class Mqtt:
 
             if self.vehicle_info is not None and self.vehicle_location is not None and self.edgeId is not None and self.edgeTy is not None:
                 json_message = dict()
-                
+
                 #data_message = self.vehicle_info + self.vehicle_location
                 data_merge = {**self.vehicle_info, **self.vehicle_location}
 
                 data_message = str(json.dumps(data_merge, ensure_ascii=False))
-                
+
                 send_data = jvm_msg_encrypt_class.encode(new_timestamp, self.edgeId, data_message)
 
                 json_message["header"] = header_repack
 
                 json_message["data"] = str(send_data)
-                
-                send_message = json.dumps(json_message, ensure_ascii=False)
 
+                send_message = json.dumps(json_message, ensure_ascii=False)
+                
                 logging.info("************** work_doing_monitor ******************** {0}".format(data_message))
 
                 mqtt.pubHub4Node(send_message)
             self.vehicle_info = None
             self.vehicle_location = None
-            
+
     def encoded_message(self, msg_data, _timestamp, _edgeId):
         """메시지 인코딩"""
         try:
@@ -549,11 +549,11 @@ class Mqtt:
             except json.JSONDecodeError:
                 logging.error("JSON 디코딩 실패")
                 return False
-            
+
             if not isinstance(msg_data, dict):
                 logging.error(f"메시지 형식이 올바르지 않습니다.{message.topic()}")
                 return False
-            
+
             _cmd = msg_data["header"]["cmd"]
             _actn = msg_data["header"]["actn"]
             _dtlActn = msg_data["header"]["dtlActn"]
@@ -565,17 +565,17 @@ class Mqtt:
             _edgeTy = msg_data["header"]["edgeTy"]
             _command = msg_data["header"]["command"]
             json_message = dict()
-            
+
             end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
             start_time = datetime.datetime.strptime(_timestamp, '%Y-%m-%d %H:%M:%S.%f')
             delay_time = (now - start_time).total_seconds() * 1000
-            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time: {0}ms , ({1} - {2})".format(round((delay_time),4), now, start_time))
-            logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format( _cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
+            logging.info("%%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time : {0}ms , ({1} - {2})".format(round((delay_time), 4), now, start_time))
+            logging.info("EDGE 수신 : {0} {1} {2} {3} {4} {5} {6}".format(_cmd, _actn, _dtlActn, _strtpnt, _dstn, _edgeId, _userId))
             
             #print(f"_cmd: {_cmd}, _actn: {_actn}")
             # 메시지 타입에 따라 mqtt발행
             if _cmd == "rep":
-                if _actn in ["status","vehicle"]:
+                if _actn in ["status", "vehicle"]:
                     if _dtlActn == "info":
                         self.vehicle_info = msg_data["data"]
                     elif _dtlActn == "position":
@@ -618,6 +618,7 @@ class Mqtt:
                 elif _actn in ["tractor", "cls"]:
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                     self.pubHub4Node(send_message)
+
             elif _cmd == "req":
                 if _actn == "init":
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
