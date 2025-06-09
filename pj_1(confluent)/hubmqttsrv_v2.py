@@ -481,6 +481,7 @@ class Mqtt:
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
                                     db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
                                     db_in_datas['"V_TIMESTAMP"'] = _timestamp
+                                    db_in_datas['"T_TIMESTAMP"'] = now
                                          
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                             elif _actn == "tractor":
