@@ -1,0 +1,157 @@
+2025-06-09 14:17:12,298 - INFO - [nodemqtt_2.py:707] 구성정보파일 읽기 /app
+2025-06-09 14:17:12,299 - INFO - [nodemqtt_2.py:708] 구성정보파일 읽기 <configparser.ConfigParser object at 0x7a8d5013bc10>
+2025-06-09 14:17:12,326 - INFO - [nodemqtt_2.py:143] Mqtt Broker connected OK
+2025-06-09 14:17:12,416 - INFO - [nodemqtt_2.py:267] In on_subscribe: 1 (0,)
+2025-06-09 14:17:12,808 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 466.89799999999997ms , (2025-06-09 14:17:12.793784 - 2025-06-09 14:17:12.326886)
+2025-06-09 14:17:12,809 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : res init all H N STSW000005 12345 
+ {
+   "header": {
+      "cmd": "res",
+      "actn": "init",
+      "dtlActn": "all",
+      "strtpnt": "H",
+      "dstn": "N",
+      "edgeId": "STSW000005",
+      "userId": "12345",
+      "command": "00001",
+      "edgeTy": "CLS",
+      "timestamp": "2025-06-09 14:17:12.326886"
+   },
+   "data": "Pp/NSBnuDeQ1dBy8HDpJHvS4MHCYc3zmCC18nkTrcGxnlD2JpohTALGXr0aaCDMJNL8FEjktdHLMkx0SRpgfM0q2QVuQd6ComxH5hflnic0/j3177ypD2n+FKl5+/KMq"
+}
+2025-06-09 14:17:12,810 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 1.1539459228515625ms 
+ 보낼 메시지 : "Pp/NSBnuDeQ1dBy8HDpJHvS4MHCYc3zmCC18nkTrcGxnlD2JpohTALGXr0aaCDMJNL8FEjktdHLMkx0SRpgfM0q2QVuQd6ComxH5hflnic0/j3177ypD2n+FKl5+/KMq"
+2025-06-09 14:17:12,811 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 N->E
+ {"header": {"command": "00001", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2025-06-09 14:17:12.326886", "edgeTy": "CLS"}, "data": ""}
+2025-06-09 14:19:43,350 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 21070508227.085003ms , (2025-06-09 14:19:43.350085 - 2024-10-08 17:24:35.123000)
+2025-06-09 14:19:43,351 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : res globalpath planwrite H C STSW000005 12345 
+ {
+   "header": {
+      "cmd": "res",
+      "actn": "globalpath",
+      "dtlActn": "planwrite",
+      "strtpnt": "H",
+      "dstn": "C",
+      "userId": "12345",
+      "edgeId": "STSW000005",
+      "edgeTy": "CLS",
+      "command": "80300",
+      "timestamp": "2024-10-08 17:24:35.123"
+   },
+   "data": ""
+}
+2025-06-09 14:19:43,353 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 1.9748210906982422ms 
+ 보낼 메시지 : ""
+2025-06-09 14:19:43,354 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 C->E
+ {"header": {"command": "80300", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2024-10-08 17:24:35.123", "edgeTy": "CLS"}, "data": ""}
+2025-06-09 14:24:47,393 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 21070812269.839ms , (2025-06-09 14:24:47.392839 - 2024-10-08 17:24:35.123000)
+2025-06-09 14:24:47,393 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : res globalpath planwrite H C STSW000005 12345 
+ {
+   "header": {
+      "cmd": "res",
+      "actn": "globalpath",
+      "dtlActn": "planwrite",
+      "strtpnt": "H",
+      "dstn": "C",
+      "userId": "12345",
+      "edgeId": "STSW000005",
+      "edgeTy": "CLS",
+      "command": "80300",
+      "timestamp": "2024-10-08 17:24:35.123"
+   },
+   "data": ""
+}
+2025-06-09 14:24:47,396 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 1.833200454711914ms 
+ 보낼 메시지 : ""
+2025-06-09 14:24:47,397 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 C->E
+ {"header": {"command": "80300", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2024-10-08 17:24:35.123", "edgeTy": "CLS"}, "data": ""}
+2025-06-09 14:24:58,276 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 21070823153.215ms , (2025-06-09 14:24:58.276215 - 2024-10-08 17:24:35.123000)
+2025-06-09 14:24:58,277 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : res globalpath planwrite H C STSW000005 12345 
+ {
+   "header": {
+      "cmd": "res",
+      "actn": "globalpath",
+      "dtlActn": "planwrite",
+      "strtpnt": "H",
+      "dstn": "C",
+      "userId": "12345",
+      "edgeId": "STSW000005",
+      "edgeTy": "CLS",
+      "command": "80300",
+      "timestamp": "2024-10-08 17:24:35.123"
+   },
+   "data": ""
+}
+2025-06-09 14:24:58,279 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 1.7638206481933594ms 
+ 보낼 메시지 : ""
+2025-06-09 14:24:58,280 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 C->E
+ {"header": {"command": "80300", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2024-10-08 17:24:35.123", "edgeTy": "CLS"}, "data": ""}
+2025-06-09 14:26:13,846 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 21070898723.585ms , (2025-06-09 14:26:13.846585 - 2024-10-08 17:24:35.123000)
+2025-06-09 14:26:13,847 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : req globalpath planwrite H N STSW000005 12345 
+ {
+   "header": {
+      "cmd": "req",
+      "actn": "globalpath",
+      "dtlActn": "planwrite",
+      "strtpnt": "H",
+      "dstn": "N",
+      "userId": "12345",
+      "edgeId": "STSW000005",
+      "edgeTy": "CLS",
+      "command": "80300",
+      "timestamp": "2024-10-08 17:24:35.123"
+   },
+   "data": "xLz6OnUg92wnaYwBLOlKWool7dwJXTWtXfH3eYKdKABxol10F1Kb+64RA+V3lgwbXHWF6TbC3L56BYJ1w4aO2C90AOqBmCZgKeh7hQ9UTYCPSgKyhcAUJd/OsGpkfwZTG/Vo2rWsQ3Rxld/CCAov1E4qAocrv8Nnajpm4yKMpCHHZ9RwiF+p35Z/ytoq/WdCZVPUke4y6WK2RwfDLCgVHUqKsymdtYruS1KgRdsVG5Q+BXNWxCBRfgFaUhBUhAl8S8eNmJKAoEuhz8Rs0MwHaLJExV2mmC2dt2OPWt7/R0bOY1YKBgTRWbQg7kmYliAbk9ZLtdd2hsh0CmhqdfJUfkNuLc6xKck2SNmR60tGrq7HM6HvkI4D2Q31iXwj9fFtB+ipFCtCKz7jkrP+XEnOO8NswI2de1nSTq9U45ufpuioIpvTueU3xuUZzFFUbbC163QzI+c5ps5oxNnucf3nLw=="
+}
+2025-06-09 14:26:13,850 - INFO - [nodemqtt_2.py:443] #1-1 edgeHub로 보낼 메시지 N->H
+ {"header": {"cmd": "res", "actn": "globalpath", "dtlActn": "planwrite", "strtpnt": "N", "dstn": "H", "userId": "12345", "edgeId": "STSW000005", "edgeTy": "CLS", "command": "80300", "timestamp": "2024-10-08 17:24:35.123"}, "data": "WT2vIhz5G1rJXJ6gLqBvIS42U5galM0DTjyePz3SrAl20aLDiM5xQSBDWttJ3k4c0lzsPLORg794BP2U1J3oVg=="}
+2025-06-09 14:26:13,852 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 1.2824535369873047ms 
+ 보낼 메시지 : xLz6OnUg92wnaYwBLOlKWool7dwJXTWtXfH3eYKdKABxol10F1Kb+64RA+V3lgwbXHWF6TbC3L56BYJ1w4aO2C90AOqBmCZgKeh7hQ9UTYCPSgKyhcAUJd/OsGpkfwZTG/Vo2rWsQ3Rxld/CCAov1E4qAocrv8Nnajpm4yKMpCHHZ9RwiF+p35Z/ytoq/WdCZVPUke4y6WK2RwfDLCgVHUqKsymdtYruS1KgRdsVG5Q+BXNWxCBRfgFaUhBUhAl8S8eNmJKAoEuhz8Rs0MwHaLJExV2mmC2dt2OPWt7/R0bOY1YKBgTRWbQg7kmYliAbk9ZLtdd2hsh0CmhqdfJUfkNuLc6xKck2SNmR60tGrq7HM6HvkI4D2Q31iXwj9fFtB+ipFCtCKz7jkrP+XEnOO8NswI2de1nSTq9U45ufpuioIpvTueU3xuUZzFFUbbC163QzI+c5ps5oxNnucf3nLw==
+2025-06-09 14:26:13,852 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 N->H
+ {"header": {"command": "80300", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2024-10-08 17:24:35.123", "edgeTy": "CLS"}, "data": {"topicName": "return/global_planning", "plan": [{"STSW000001": "[[22420232,[36.609286,127.287869],0],[22420261,[36.61033132,127.2848557],1],[22420265,[36.61033237,127.2848132],2],[22420264,[36.61036086,127.2848038],2],[22420061,[36.6103738,127.2855318],3]"}], "missionArea": null, "strategy": "MIN_TOTAL_TIME"}}
+2025-06-09 14:26:19,875 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 21070904751.883ms , (2025-06-09 14:26:19.874883 - 2024-10-08 17:24:35.123000)
+2025-06-09 14:26:19,875 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : req globalpath planwrite H N STSW000005 12345 
+ {
+   "header": {
+      "cmd": "req",
+      "actn": "globalpath",
+      "dtlActn": "planwrite",
+      "strtpnt": "H",
+      "dstn": "N",
+      "userId": "12345",
+      "edgeId": "STSW000005",
+      "edgeTy": "CLS",
+      "command": "80300",
+      "timestamp": "2024-10-08 17:24:35.123"
+   },
+   "data": "xLz6OnUg92wnaYwBLOlKWool7dwJXTWtXfH3eYKdKABxol10F1Kb+64RA+V3lgwbXHWF6TbC3L56BYJ1w4aO2C90AOqBmCZgKeh7hQ9UTYCPSgKyhcAUJd/OsGpkfwZTG/Vo2rWsQ3Rxld/CCAov1E4qAocrv8Nnajpm4yKMpCHHZ9RwiF+p35Z/ytoq/WdCZVPUke4y6WK2RwfDLCgVHUqKsymdtYruS1KgRdsVG5Q+BXNWxCBRfgFaUhBUhAl8S8eNmJKAoEuhz8Rs0MwHaLJExV2mmC2dt2OPWt7/R0bOY1YKBgTRWbQg7kmYliAbk9ZLtdd2hsh0CmhqdfJUfkNuLc6xKck2SNmR60tGrq7HM6HvkI4D2Q31iXwj9fFtB+ipFCtCKz7jkrP+XEnOO8NswI2de1nSTq9U45ufpuioIpvTueU3xuUZzFFUbbC163QzI+c5ps5oxNnucf3nLw=="
+}
+2025-06-09 14:26:19,877 - INFO - [nodemqtt_2.py:443] #1-1 edgeHub로 보낼 메시지 N->H
+ {"header": {"cmd": "res", "actn": "globalpath", "dtlActn": "planwrite", "strtpnt": "N", "dstn": "H", "userId": "12345", "edgeId": "STSW000005", "edgeTy": "CLS", "command": "80300", "timestamp": "2024-10-08 17:24:35.123"}, "data": "WT2vIhz5G1rJXJ6gLqBvIS42U5galM0DTjyePz3SrAl20aLDiM5xQSBDWttJ3k4c0lzsPLORg794BP2U1J3oVg=="}
+2025-06-09 14:26:19,878 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 0.8513927459716797ms 
+ 보낼 메시지 : xLz6OnUg92wnaYwBLOlKWool7dwJXTWtXfH3eYKdKABxol10F1Kb+64RA+V3lgwbXHWF6TbC3L56BYJ1w4aO2C90AOqBmCZgKeh7hQ9UTYCPSgKyhcAUJd/OsGpkfwZTG/Vo2rWsQ3Rxld/CCAov1E4qAocrv8Nnajpm4yKMpCHHZ9RwiF+p35Z/ytoq/WdCZVPUke4y6WK2RwfDLCgVHUqKsymdtYruS1KgRdsVG5Q+BXNWxCBRfgFaUhBUhAl8S8eNmJKAoEuhz8Rs0MwHaLJExV2mmC2dt2OPWt7/R0bOY1YKBgTRWbQg7kmYliAbk9ZLtdd2hsh0CmhqdfJUfkNuLc6xKck2SNmR60tGrq7HM6HvkI4D2Q31iXwj9fFtB+ipFCtCKz7jkrP+XEnOO8NswI2de1nSTq9U45ufpuioIpvTueU3xuUZzFFUbbC163QzI+c5ps5oxNnucf3nLw==
+2025-06-09 14:26:19,879 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 N->H
+ {"header": {"command": "80300", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2024-10-08 17:24:35.123", "edgeTy": "CLS"}, "data": {"topicName": "return/global_planning", "plan": [{"STSW000001": "[[22420232,[36.609286,127.287869],0],[22420261,[36.61033132,127.2848557],1],[22420265,[36.61033237,127.2848132],2],[22420264,[36.61036086,127.2848038],2],[22420061,[36.6103738,127.2855318],3]"}], "missionArea": null, "strategy": "MIN_TOTAL_TIME"}}
+2025-06-09 14:27:07,300 - INFO - [nodemqtt_2.py:303] %%%%%%%%%%%%%%%%%%%%%%%%% EdgeHub(Mobile) -> EdgeNode delay_time: 21070952177.421ms , (2025-06-09 14:27:07.300421 - 2024-10-08 17:24:35.123000)
+2025-06-09 14:27:07,301 - INFO - [nodemqtt_2.py:317] MQTT 메시지 수신 : on topic: edgeplatform/hub/STSW000005  헤더 : req globalpath planwrite H N STSW000005 12345 
+ {
+   "header": {
+      "cmd": "req",
+      "actn": "globalpath",
+      "dtlActn": "planwrite",
+      "strtpnt": "H",
+      "dstn": "N",
+      "userId": "12345",
+      "edgeId": "STSW000005",
+      "edgeTy": "CLS",
+      "command": "80300",
+      "timestamp": "2024-10-08 17:24:35.123"
+   },
+   "data": "xLz6OnUg92wnaYwBLOlKWool7dwJXTWtXfH3eYKdKABxol10F1Kb+64RA+V3lgwbXHWF6TbC3L56BYJ1w4aO2C90AOqBmCZgKeh7hQ9UTYCPSgKyhcAUJd/OsGpkfwZTG/Vo2rWsQ3Rxld/CCAov1E4qAocrv8Nnajpm4yKMpCHHZ9RwiF+p35Z/ytoq/WdCZVPUke4y6WK2RwfDLCgVHUqKsymdtYruS1KgRdsVG5Q+BXNWxCBRfgFaUhBUhAl8S8eNmJKAoEuhz8Rs0MwHaLJExV2mmC2dt2OPWt7/R0bOY1YKBgTRWbQg7kmYliAbk9ZLtdd2hsh0CmhqdfJUfkNuLc6xKck2SNmR60tGrq7HM6HvkI4D2Q31iXwj9fFtB+ipFCtCKz7jkrP+XEnOO8NswI2de1nSTq9U45ufpuioIpvTueU3xuUZzFFUbbC163QzI+c5ps5oxNnucf3nLw=="
+}
+2025-06-09 14:27:07,304 - INFO - [nodemqtt_2.py:443] #1-1 edgeHub로 보낼 메시지 N->H
+ {"header": {"cmd": "res", "actn": "globalpath", "dtlActn": "planwrite", "strtpnt": "N", "dstn": "H", "userId": "12345", "edgeId": "STSW000005", "edgeTy": "CLS", "command": "80300", "timestamp": "2024-10-08 17:24:35.123"}, "data": "WT2vIhz5G1rJXJ6gLqBvIS42U5galM0DTjyePz3SrAl20aLDiM5xQSBDWttJ3k4c0lzsPLORg794BP2U1J3oVg=="}
+2025-06-09 14:27:07,305 - INFO - [nodemqtt_2.py:465] #1 DATA 인/디코드 실행 시간: 1.2919902801513672ms 
+ 보낼 메시지 : xLz6OnUg92wnaYwBLOlKWool7dwJXTWtXfH3eYKdKABxol10F1Kb+64RA+V3lgwbXHWF6TbC3L56BYJ1w4aO2C90AOqBmCZgKeh7hQ9UTYCPSgKyhcAUJd/OsGpkfwZTG/Vo2rWsQ3Rxld/CCAov1E4qAocrv8Nnajpm4yKMpCHHZ9RwiF+p35Z/ytoq/WdCZVPUke4y6WK2RwfDLCgVHUqKsymdtYruS1KgRdsVG5Q+BXNWxCBRfgFaUhBUhAl8S8eNmJKAoEuhz8Rs0MwHaLJExV2mmC2dt2OPWt7/R0bOY1YKBgTRWbQg7kmYliAbk9ZLtdd2hsh0CmhqdfJUfkNuLc6xKck2SNmR60tGrq7HM6HvkI4D2Q31iXwj9fFtB+ipFCtCKz7jkrP+XEnOO8NswI2de1nSTq9U45ufpuioIpvTueU3xuUZzFFUbbC163QzI+c5ps5oxNnucf3nLw==
+2025-06-09 14:27:07,306 - INFO - [nodemqtt_2.py:476] #1-2 edge로 보낼 메시지 N->H
+ {"header": {"command": "80300", "VID": "STSW000005", "edgeId": "STSW000005", "timestamp": "2024-10-08 17:24:35.123", "edgeTy": "CLS"}, "data": {"topicName": "return/global_planning", "plan": [{"STSW000001": "[[22420232,[36.609286,127.287869],0],[22420261,[36.61033132,127.2848557],1],[22420265,[36.61033237,127.2848132],2],[22420264,[36.61036086,127.2848038],2],[22420061,[36.6103738,127.2855318],3]"}], "missionArea": null, "strategy": "MIN_TOTAL_TIME"}}
