@@ -266,7 +266,7 @@ class Mqtt:
                 decoded_data = self.jvm_msg_encrypt_class.decode(_timestamp, _edgeId, res["data"])
                 end_time = time.time()
 
-                execution_time = (end_time - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
+                execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
                 logging.info("\n")
                 logging.info("\t 운영 적용시 이건 꾝 주석처리 하세요.")
                 logging.info("\t DATA 디코드 실행 시간: {0}ms".format(execution_time))
@@ -311,9 +311,10 @@ class Mqtt:
 
                                 # 다시 sql문 생성위한 위한 변환
                                 db_in_datas= self.gbutil.dictToSql(snake_case_vector)
+                                db_in_datas['"PLAN"'] = db_in_datas['"PLAN"'].replace("'", '"')
 
                                 # DB Insert
-                                db_conditions = {'tablename': 'public.\"GLOBAL_PLAN_HISTORY\"'}
+                                db_conditions = {'tablename': 'public.\"GLOBAL_PLAN_HISTORY2\"'}
                                 # 추가할 필드 추가
                                 db_in_datas['"VEHICLE_ID"'] = _edgeId
                                 db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
@@ -479,6 +480,7 @@ class Mqtt:
                                     # 추가할 필드 추가
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
                                     db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
+                                    db_in_datas['"V_TIMESTAMP"'] = _timestamp
                                          
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                             elif _actn == "tractor":
@@ -553,7 +555,7 @@ class Mqtt:
 
                                     # 추가할 필드 추가
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                    db_in_datas['"V_TIMESTAMP"'] = _timestamp
+                                    #db_in_datas['"V_TIMESTAMP"'] = _timestamp
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)   
                             elif _actn == "cls":
                                 if _dtlActn == "ctrlinfo":
@@ -575,7 +577,7 @@ class Mqtt:
                                     db_conditions = {'tablename': 'public.\"STREET_SWEEPER_INFO\"'}
                                     # 추가할 필드 추가
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                    db_in_datas['"V_TIMESTAMP"'] = _timestamp
+                                    #db_in_datas['"V_TIMESTAMP"'] = _timestamp
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)
 
                                     # data의 값이 배열로 들어가 있어서 일단 json 객체로 변환해서 하나씩 꺼내와서 DB 넣거나, 그냥 텍스트로 통채로 넣어야 함
