@@ -4,15 +4,14 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     default-jdk \
-    && rm -rf /var/lib/apt/lists/* \ 
-    mkdir -p /app/logs /app/sqlite_db \
-    chmod +x *.py \
-    adduser -D user
+    && rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV PYTHONUNBUFFERED=1 
+RUN mkdir -p /app/logs /app/sqlite_db
 
-USER user
+RUN chmod +x *.py
+
+ENV PYTHONUNBUFFERED=1 
