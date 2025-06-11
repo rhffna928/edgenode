@@ -132,7 +132,7 @@ class VehicleDataConsumer:
                 snake = self.gbutil.tosnake_dictname(data_merge)
                 db_in_datas = self.gbutil.dictToSql(snake)
                 db_in_datas['VEHICLE_ID'] = "\"" + self.edgeId + "\""
-                db_in_datas['VEHICLE_TYPE'] = "\"" + self.edgeTy[2] + "\""
+                db_in_datas['VEHICLE_TYPE'] = "\"" + self.edgeId[0] + "\""
                 db_conditions = {'tablename': '"VEHICLE_ING_INFO"'}
                 try:
                     result = self.sqlitectrl.base_insert(db_conditions, db_in_datas)        

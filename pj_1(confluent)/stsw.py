@@ -96,7 +96,7 @@ class StreetSweeperConsumer:
             logging.debug(f"변환된 snake case 데이터: {snake}")
             
             db_in_datas = self.gbutil.dictToSql(snake)
-            db_in_datas['VEHICLE_ID'] = f"\"{data['header']['edgeId']}\""
+            db_in_datas['"VEHICLE_ID"'] = f"\"{data['header']['edgeId']}\""
             db_conditions = {'tablename': '"STREET_SWEEPER_INFO"'}
             
             try:
