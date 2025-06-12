@@ -611,7 +611,7 @@ class Mqtt:
                         json_message_edge["data"] = ""
                     else:
                         json_message_edge["data"] = json.loads(str(send_data), strict=True)
-                    
+
                     send_message = json.dumps(json_message_edge, ensure_ascii=False)
 
                     sendAll(client_sockets_1, send_message)
@@ -622,7 +622,7 @@ class Mqtt:
                         send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                         self.pubHub4Node(send_message)
                         self.send_time = current_time
-                    
+
             elif _cmd == "req":
                 if _actn == "init":
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
