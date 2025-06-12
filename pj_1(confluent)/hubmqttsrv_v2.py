@@ -1,35 +1,29 @@
 import paho.mqtt
 import paho.mqtt.client as mqtt_client
 #from paho.mqtt import client as mqtt_client
-
 import json
 import random
 import time
 import os
 import datetime
 import glob
-
 from pathlib import Path
-
 import configparser
 import queue
 import threading
 import logging
 from logging.handlers import RotatingFileHandler
 from logging.handlers import TimedRotatingFileHandler
-
 import pandas as pd
-
 from constant import Constant
 #from MysqlController import MysqlController
 from PostgreController import PostgreController
-
 from GBUtil import GBUtil
-
 # java jar 임포트
 import jpype
 import jpype.imports
 from jpype.types import *
+import ast
 
 from GBUtil import GBUtil
 
@@ -214,7 +208,6 @@ class Mqtt:
             conditions = dict()
             replay_ok = False
             other_pub_ok = False
-
             try:                
                 queue_att = self.data_queue.get()
 
@@ -237,7 +230,7 @@ class Mqtt:
                 _edgeId = str(res["header"]["edgeId"])
                 _edgeTy = str(res["header"]["edgeTy"])
                 _timestamp = str(res["header"]["timestamp"])
-                print(_edgeId)
+                print(len(_edgeId))
                 if _cmd == "heartbeat":
                     continue
                 
@@ -246,7 +239,7 @@ class Mqtt:
                 delay_time = (now - start_time).total_seconds() * 1000  # 밀리세컨드 단위로 변환
                 start_str = str(now)
                 end_str = str(start_time)
-                logging.info("$$$ 큐에서 꺼냄  N(M)->H DelayTime: {1}ms ({2} - {3}, ThreadId:{0})".format(thread_id, round(delay_time,4), start_str[13:], end_str[13:]))
+                logging.info("$$$ 큐에서 꺼냄  N(M)->H DelayTime: {1}ms ({2} - {3}, ThreadId:{0})".format(thread_id, round(delay_time,4), start_str[11:], end_str[11:]))
 
                 _cmd_req = _cmd
                 resheader = res["header"]
@@ -305,24 +298,24 @@ class Mqtt:
                                 end_time = time.time()
                                 execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
                                 logging.info("\t#1 복호화대상 {}byte, 복호화 실행시간: {}ms".format(len(res["data"]), execution_time))
-
+                                #print(json.loads(str(decoded_data)))
                                 # DB 변수형으로 변환
-                                snake_case_vector = self.gbutil.tosnake_dictname(json.loads(str(decoded_data)))
+                                # snake_case_vector = self.gbutil.tosnake_dictname(json.loads(str(decoded_data)))
 
-                                # 다시 sql문 생성위한 위한 변환
-                                db_in_datas= self.gbutil.dictToSql(snake_case_vector)
-                                db_in_datas['"PLAN"'] = db_in_datas['"PLAN"'].replace("'", '"')
+                                # # 다시 sql문 생성위한 위한 변환
+                                # db_in_datas= self.gbutil.dictToSql(snake_case_vector)
+                                # db_in_datas['"PLAN"'] = db_in_datas['"PLAN"'].replace("'", "'")
 
-                                # DB Insert
-                                db_conditions = {'tablename': 'public.\"GLOBAL_PLAN_HISTORY2\"'}
-                                # 추가할 필드 추가
-                                db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
+                                # # DB Insert
+                                # db_conditions = {'tablename': 'public.\"GLOBAL_PLAN_HISTORY2\"'}
+                                # # 추가할 필드 추가
+                                # db_in_datas['"VEHICLE_ID"'] = _edgeId
+                                # db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
                                         
-                                result = self.dbctrl.base_insert(db_conditions,db_in_datas)
+                                #result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                                 
                                 RES_TOPIC = self.PUB_EDGENODE_TOPIC + "/" + _edgeId
-
+                                
                                 _encoded_data = str(res["data"])
                         elif _actn == "event":
                             RES_TOPIC = self.PUB_EDGENODE_TOPIC + "/" + _edgeId
@@ -479,9 +472,9 @@ class Mqtt:
                                     db_conditions = {'tablename': 'public.\"VEHICLE_ING_INFO\"'}
                                     # 추가할 필드 추가
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                    db_in_datas['"VEHICLE_TYPE"'] = _edgeTy[2]
+                                    db_in_datas['"VEHICLE_TYPE"'] = _edgeId[0]
                                     db_in_datas['"V_TIMESTAMP"'] = _timestamp
-                                    db_in_datas['"T_TIMESTAMP"'] = now
+                                    db_in_datas['"T_TIMESTAMP"'] = start_str
                                          
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                             elif _actn == "tractor":
@@ -536,28 +529,7 @@ class Mqtt:
                                     db_in_datas['"VEHICLE_ID"'] = _edgeId
                                          
                                     result = self.dbctrl.base_insert(db_conditions,db_in_datas)   
-                                elif _dtlActn == "tractorinfo":
-                                    
-                                    # data 디코딩
-                                    start_time = time.time()
-                                    decoded_data = self.jvm_msg_encrypt_class.decode(_timestamp, _edgeId, res["data"])
-                                    end_time = time.time()
-                                    execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
-                                    logging.info("\t#4 복호화대상 {}byte, 복호화 실행시간: {}ms".format(len(res["data"]), execution_time))
 
-                                    # DB 변수형으로 변환
-                                    snake_case_vector = self.gbutil.tosnake_dictname(json.loads(str(decoded_data)))
-
-                                    # 다시 sql문 생성위한 위한 변환
-                                    db_in_datas= self.gbutil.dictToSql(snake_case_vector)
-
-                                    # DB Insert
-                                    db_conditions = {'tablename': 'public.\"WORK_INFO_TRACTOR\"'}
-
-                                    # 추가할 필드 추가
-                                    db_in_datas['"VEHICLE_ID"'] = _edgeId
-                                    #db_in_datas['"V_TIMESTAMP"'] = _timestamp
-                                    result = self.dbctrl.base_insert(db_conditions,db_in_datas)   
                             elif _actn == "cls":
                                 if _dtlActn == "ctrlinfo":
                                     start_time = time.time()
@@ -609,7 +581,7 @@ class Mqtt:
 
                             _encoded_data = str(res["data"])
                             # DB에 넣으려면 풀고 작업하세요
-                            """
+                            
                             # data 디코딩
                             decoded_data = self.jvm_msg_encrypt_class.decode(_timestamp, _edgeId, res["data"])
 
@@ -618,17 +590,16 @@ class Mqtt:
 
                             # 다시 sql문 생성위한 위한 변환
                             db_in_datas= self.gbutil.dictToSql(snake_case_vector)
-                            db_in_datas['"WORK_AREA"'] = db_in_datas['"WORK_AREA"'].replace("'", '"')
-                            db_in_datas['"WORK_PATH"'] = db_in_datas['"WORK_PATH"'].replace("'", '"')
 
                             # DB Insert
-                            db_conditions = {'tablename': 'public.\"WORK_INFO_TRACTOR\"'}
+                            db_conditions = {'tablename': 'public.\"EVENT_INFO\"'}
 
                             # 추가할 필드 추가
                             db_in_datas['"VEHICLE_ID"'] = _edgeId
+                            db_in_datas['"VEHICLE_TYPE"'] = _edgeId[0]
                                  
                             result = self.dbctrl.base_insert(db_conditions,db_in_datas)
-                            """                        
+                            
                         elif _cmd == "hist":
                             #decoded_data = self.jvm_msg_encrypt_class.decode(_timestamp, _edgeId, res["data"])
                             #logging.info("decoded_data: {0}, {1} => {2} ".format(_timestamp, _edgeId, str(decoded_data)))
@@ -943,9 +914,16 @@ class Mqtt:
                     send_message = json.dumps(json_message, ensure_ascii=False)
                     #logging.info("\n$$$$$$$$$>>> #12 보낼 메시지 : 대상 {0},  {1}->{2},  {3}".format(RES_TOPIC, _strtpnt_res, _dstn_res, json.dumps(json_message, ensure_ascii=False, indent=3)))
                     logging.info("\t$$$$$$$$$>>> {} 으로 보냄 : {} {} {}, 대상 {} -> {},  {}".format(resheader["dstn"], _cmd_req, _actn, _dtlActn, resheader["strtpnt"], resheader["dstn"], RES_TOPIC))
-            
-                    self.publish(client, RES_TOPIC, send_message) 
-
+                    
+                    if len(_edgeId) > 15:
+                        edgeIds = ast.literal_eval(_edgeId)
+                        for edgeId in edgeIds:
+                            print(edgeId)
+                            RES_TOPIC = self.PUB_EDGENODE_TOPIC + "/" + edgeId
+                            self.publish(client, RES_TOPIC, send_message) 
+                    else:
+                        self.publish(client, RES_TOPIC, send_message) 
+                    
                 if other_pub_ok is True:
                     
                     resheader["cmd"] = _cmd_req
