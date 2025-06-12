@@ -7,6 +7,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
+      - .:/app
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
     networks:
@@ -20,6 +21,7 @@ services:
   nodemqtt:
     build: .
     volumes:
+      - .:/app
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
     networks:
