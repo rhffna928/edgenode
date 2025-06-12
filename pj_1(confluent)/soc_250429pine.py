@@ -352,7 +352,7 @@ def start_kafka_consumer():
             try: 
                 msg_value = json.loads(msg.value().decode('utf-8'))
                 sendAll(client_sockets_1, msg_value)
-                logging.info(f"특장차 메시지 전송 완료: {msg_value}")
+                logging.info(f"특장차 메시지 전송 완료: {client_sockets_1}")
             except json.JSONDecodeError as e:
                 logging.error(f"JSON 디코드 오류: {e}")
             except Exception as e:
