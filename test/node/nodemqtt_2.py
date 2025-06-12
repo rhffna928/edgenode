@@ -122,6 +122,7 @@ class Mqtt:
         self.notOkAddSub = True
         self.subcribes = None
         self.timer_interval = 1
+        self.send_time = 0
         self.vehicle_info = None
         self.vehicle_location = None
 
@@ -616,9 +617,12 @@ class Mqtt:
                     sendAll(client_sockets_1, send_message)
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                 elif _actn in ["tractor", "cls"]:
-                    send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
-                    self.pubHub4Node(send_message)
-                    send_message = None
+                    current_time = time.time()
+                    if current_time - self.send_time >= 3.0:
+                        send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
+                        self.pubHub4Node(send_message)
+                        self.send_time = current_time
+                    
             elif _cmd == "req":
                 if _actn == "init":
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
