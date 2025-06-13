@@ -161,7 +161,29 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         logging.info("특장차 setup 호출")
         
         return socketserver.BaseRequestHandler.setup(self)
+    def finish_message(self):
+            
+            now = datetime.datetime.now()
+            
+            header_repack = dict()
+            header_repack["cmd"] = str("event")
+            header_repack["actn"] = str("event")
+            header_repack["dtlActn"] = str("all")
+            header_repack["strtpnt"] = "N"
+            header_repack["dstn"] = "H"
+            header_repack["userId"] = ""
+            header_repack["edgeId"] = self.edgeId
+            header_repack["edgeTy"] = self.edgeTy
+            new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            header_repack["timestamp"] = new_timestamp    
+            header_repack["command"] = "60330"
 
+            json_message = dict()
+            json_message["header"] = header_repack
+            json_message["data"] = {"eventCode": "SYSSTOP", "eventDescription": "종료", "eventType": "INFO", "eventSubType": "SYSSTOP"}
+
+            send_kafka_msg('connect', message=json_message)
+            logging.info("특장차 종료 메시지 전송 완료")
     def handle(self):
         global g_work_info
         conn = self.request  # 접속한 클라이언트 소켓
@@ -269,31 +291,6 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
                                 json_message["data"] = res["data"]
 
-
-                                #if _actn == "globalpath":
-                                    # if _dtlActn == "planwrite":
-                                    #     json_message_edge = dict()
-
-                                    #     json_message_edge["command"] = edge_command
-                                    #     json_message_edge["VID"] = _edgeId
-                                    #     json_message_edge["timestamp"] = _timestamp
-                                    #     json_message_edge["edgeTy"] = _edgeTy
-
-                                    #     data_message = str(json.dumps(res["data"], ensure_ascii=False))
-                                    #     start_time = time.time()
-
-                                    #     end_time = time.time()
-                                    #     execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
-                                    #     logging.info("#1 DATA 인/디코드 실행 시간: {0}ms".format(execution_time))
-                                        
-                                    #     if data_message == "":
-                                    #         json_message_edge["data"] = ""
-                                    #     else:
-                                    #         json_message_edge["data"] = json.loads(str(data_message), strict=True)
-                                        
-                                    #     send_message = json.dumps(json_message_edge, ensure_ascii=False)
-                                    #     sendAll(client_sockets_1, send_message)
-                                    #     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                                 send_kafka_msg('connect', message=json_message)
                                 
                         except json.decoder.JSONDecodeError as err:
@@ -332,7 +329,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         addr = self.client_address[0]
         client_sockets_1.remove((conn, addr))
         logging.info("현재 특장차 Client 접속수 : {0}".format(len(client_sockets_1)))
-
+        self.finish_message()  # 종료 메시지 전송
         return socketserver.BaseRequestHandler.finish(self)  
 class ThreadedTCPRequestHandler(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass

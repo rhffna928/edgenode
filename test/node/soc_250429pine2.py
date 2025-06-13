@@ -161,6 +161,28 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         logging.info("특장차 setup 호출")
         
         return socketserver.BaseRequestHandler.setup(self)
+    def finish_message(self):
+        
+        now = datetime.datetime.now()
+        
+        header_repack = dict()
+        header_repack["cmd"] = str("event")
+        header_repack["actn"] = str("event")
+        header_repack["dtlActn"] = str("all")
+        header_repack["strtpnt"] = "N"
+        header_repack["dstn"] = "H"
+        header_repack["userId"] = ""
+        header_repack["edgeId"] = self.edgeId
+        header_repack["edgeTy"] = self.edgeTy
+        new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+        header_repack["timestamp"] = new_timestamp    
+        header_repack["command"] = "60330"
+
+        json_message = dict()
+        json_message["header"] = header_repack
+        json_message["data"] = {"eventCode": "SYSSTOP", "eventDescription": "종료", "eventType": "INFO", "eventSubType": "SYSSTOP"}
+
+        send_kafka_msg('connect', message=json_message)
 
     def handle(self):
         global g_work_info
@@ -330,7 +352,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         addr = self.client_address[0]
         client_sockets_1.remove((conn, addr))
         logging.info("현재 특장차 Client 접속수 : {0}".format(len(client_sockets_1)))
-
+        self.finish_message()
         return socketserver.BaseRequestHandler.finish(self)  
 class ThreadedTCPRequestHandler(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass

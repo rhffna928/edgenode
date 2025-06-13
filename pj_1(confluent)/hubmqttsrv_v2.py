@@ -584,7 +584,7 @@ class Mqtt:
                             
                             # data 디코딩
                             decoded_data = self.jvm_msg_encrypt_class.decode(_timestamp, _edgeId, res["data"])
-
+                            
                             # DB 변수형으로 변환
                             snake_case_vector = self.gbutil.tosnake_dictname(json.loads(str(decoded_data)))
 
@@ -592,12 +592,16 @@ class Mqtt:
                             db_in_datas= self.gbutil.dictToSql(snake_case_vector)
 
                             # DB Insert
+                            print(snake_case_vector["EVENT_DESCRIPTION"])
                             db_conditions = {'tablename': 'public.\"EVENT_INFO\"'}
-
+                            if snake_case_vector["EVENT_DESCRIPTION"] == "작업기동작시작":
+                                db_in_datas['"EVENT_SUB_TYPE"'] = "OPERSTART"
+                            elif snake_case_vector["EVENT_DESCRIPTION"] == "작업기동작정지":
+                                db_in_datas['"EVENT_SUB_TYPE"'] = "OPERSTOP"
                             # 추가할 필드 추가
                             db_in_datas['"VEHICLE_ID"'] = _edgeId
                             db_in_datas['"VEHICLE_TYPE"'] = _edgeId[0]
-                                 
+
                             result = self.dbctrl.base_insert(db_conditions,db_in_datas)
                             
                         elif _cmd == "hist":
@@ -734,6 +738,23 @@ class Mqtt:
                             execution_time = (end_time - start_time) * 1000  # 밀리세컨드 단위로 변환
                             logging.info("\t#6 복호화대상 {}byte, 복호화 실행시간: {}ms".format(len(data_string), execution_time))
 
+                            #시스템 시작 이벤트
+                            
+                            # 다시 sql문 생성위한 위한 변환
+                            db_in_datas= {}
+                            # DB Insert
+                            db_conditions = {'tablename': 'public.\"EVENT_INFO\"'}
+
+                            # 추가할 필드 추가
+                            db_in_datas['"VEHICLE_ID"'] = _edgeId
+                            db_in_datas['"VEHICLE_TYPE"'] = _edgeId[0]
+                            db_in_datas['"EVENT_CODE"'] = "SYSSTART"
+                            db_in_datas['"EVENT_TYPE"'] = "INFO"
+                            db_in_datas['"EVENT_DESCRIPTION"'] = "시작"
+                            db_in_datas['"EVENT_SUB_TYPE"'] = "SYSSTART"
+                            
+                            result = self.dbctrl.base_insert(db_conditions,db_in_datas)
+                            
                             #문자열을 객체로 변환하기
                             datadata = json.loads(str(decoded_data))
 
