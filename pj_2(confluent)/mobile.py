@@ -342,7 +342,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                             send_message2 = json.dumps(json_message2, ensure_ascii=False)
 
-                            send_kafka_msg('event',json_message2)
+                            send_kafka_msg('mobile',json_message2)
 
                     except json.decoder.JSONDecodeError as err:
                         logging.exception("json.decoder.JSONDecodeError %s", err)
