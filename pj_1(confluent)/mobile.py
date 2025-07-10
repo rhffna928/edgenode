@@ -190,7 +190,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                 if index == -1:
                     #logger.info("완전체가 없다. 버퍼에 추가하고 수신대기로 " + buf)
                     continue
-                else:  
+                else:
                     data = buf[0:index + 2]
 
                     #data = buf + data   
@@ -331,9 +331,10 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                         if send_direction == Constant.MOBILESOCK1:
                             #sendAll(client_sockets_1, send_message)
-                            send_kafka_msg('connect',send_message)
+                            send_kafka_msg('connect', send_message)
                             pass
                         elif send_direction == Constant.MOBILESOCK2:
+                            send_kafka_msg('mobile', send_message)
                             sendAll(client_sockets_2, send_message)
 
                         if send_direction_other == Constant.EDGEHUB:

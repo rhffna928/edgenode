@@ -922,7 +922,7 @@ class Mqtt:
                                 logging.info("\t#4 암호화대상 {}byte,  코드 실행 시간: {}ms".format(len(resdata_string), execution_time))
 
                                 _encoded_data = str(send_data)
-     
+
                 if _cmd == "req" or _cmd == "cmd" or _cmd == "res" or replay_ok is True:                
                     resheader["cmd"] = _cmd_req
                     resheader["strtpnt"] = _strtpnt_res
@@ -931,11 +931,12 @@ class Mqtt:
 
                     json_message["header"] = resheader
                     json_message["data"] = _encoded_data
-                    
+
                     send_message = json.dumps(json_message, ensure_ascii=False)
                     #logging.info("\n$$$$$$$$$>>> #12 보낼 메시지 : 대상 {0},  {1}->{2},  {3}".format(RES_TOPIC, _strtpnt_res, _dstn_res, json.dumps(json_message, ensure_ascii=False, indent=3)))
                     logging.info("\t$$$$$$$$$>>> {} 으로 보냄 : {} {} {}, 대상 {} -> {},  {}".format(resheader["dstn"], _cmd_req, _actn, _dtlActn, resheader["strtpnt"], resheader["dstn"], RES_TOPIC))
-                    
+
+                    #EDGE_ID 값에 2개 이상의 대상에 전달할 경우
                     if len(_edgeId) > 15:
                         edgeIds = ast.literal_eval(_edgeId)
                         for edgeId in edgeIds:
@@ -978,8 +979,9 @@ class Mqtt:
                 self.data_queue.task_done()
 
     def on_message(self, client, userdata, message):
-        topic = self.onmessage_topic = message.topic
         
+        topic = self.onmessage_topic = message.topic
+
         try:
             message = str(message.payload.decode("utf-8"))
         except UnicodeDecodeError as err:
@@ -989,7 +991,6 @@ class Mqtt:
             logging.exception("Exception %s. ", err)
             return
 
-
         #logging.exception("message : {0}".format(message))
 
         send_message = ""
@@ -998,7 +999,7 @@ class Mqtt:
 
         replay_ok = False
 
-        
+
         try:
             res=json.loads(str(message))
 
@@ -1011,7 +1012,7 @@ class Mqtt:
             self.data_queue.put(queue_att)
             #logging.info("$$$ 큐에 메시지 넣음 {0}, {1}, {2}".format(client, res, topic))
             logging.info("$$$ 큐에 메시지 넣음 {0}, {1}".format(topic, client))
-            
+
         except json.decoder.JSONDecodeError as err:
             logging.exception("json.decoder.JSONDecodeError %s", err)
             return        
@@ -1114,6 +1115,6 @@ if __name__ == "__main__":
 
     try:
         mqtt.start(subcribes)
-    except :
+    except:
         logger.exception("MQTT Connect Fail...")
         sys.exit()

@@ -124,7 +124,7 @@ class Mqtt:
         self.timer_interval = 1
         self.vehicle_info = None
         self.vehicle_location = None
-
+        self.send_time = 0
         try:
             client_mqtt = self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1)
         except:
@@ -154,7 +154,7 @@ class Mqtt:
             _header["strtpnt"] = "N"
             _header["dstn"] = "H"
             _header["edgeId"] = self.edgeId
-            _header["userId"] = "12345"
+            _header["userId"] = ""
             _header["command"] = "00001"
             _header["edgeTy"] = self.edgeTy
             _header["timestamp"] = now_str
@@ -495,7 +495,7 @@ class Mqtt:
             header_repack["dtlActn"] = str("common")
             header_repack["strtpnt"] = "N"
             header_repack["dstn"] = "H"
-            header_repack["userId"] = ""
+            header_repack["userId"] = "specialuser"
             header_repack["edgeId"] = self.edgeId
             header_repack["edgeTy"] = self.edgeTy
             new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -606,6 +606,7 @@ class Mqtt:
                     json_message_edge["VID"] = _edgeId
                     json_message_edge["timestamp"] = _timestamp
                     json_message_edge["edgeTy"] = _edgeTy
+                    json_message_edge["userId"] = _userId
 
                     data_message = str(json.dumps(msg_data["data"], ensure_ascii=False))
                     start_time = time.time()
@@ -647,6 +648,7 @@ class Mqtt:
         except Exception as e:
             logging.error(f"메시지 처리 중 오류 발생: {str(e)}")
             return False        
+        
 def start_kafka_consumer(mqtt_instance):
     try:
         while True:

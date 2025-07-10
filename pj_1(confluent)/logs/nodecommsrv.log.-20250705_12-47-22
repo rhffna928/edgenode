@@ -1,0 +1,422 @@
+2025-07-05 12:47:22,831 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 12:47:22,832 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 12:47:22,833 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 12:47:22,833 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 12:47:22,833 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 12:47:22,834 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 12:47:22,834 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 12:47:22,834 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 12:47:23,072 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 12:47:23,073 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 12:47:23,073 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 12:47:23,073 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 12:47:36,101 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 12:47:36,102 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 12:47:36,102 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 12:47:36,103 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 14:12:37,440 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 14:12:37,441 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 14:12:37,441 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 14:12:37,441 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 14:12:37,442 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 14:12:37,442 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 14:12:37,443 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 14:12:37,443 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 14:12:37,730 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 14:12:37,730 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 14:12:37,731 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 14:12:37,731 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 14:12:50,720 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 14:12:50,721 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 14:12:50,722 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 14:12:50,722 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 15:37:57,486 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 15:37:57,487 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 15:37:57,487 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 15:37:57,488 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 15:37:57,488 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 15:37:57,489 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 15:37:57,489 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 15:37:57,489 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 15:37:57,794 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 15:37:57,794 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 15:37:57,795 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 15:37:57,795 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 15:38:10,768 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 15:38:10,769 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 15:38:10,769 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 15:38:10,769 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 17:02:57,714 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 17:02:57,715 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 17:02:57,715 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 17:02:57,715 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 17:02:57,716 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 17:02:57,716 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 17:02:57,717 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 17:02:57,717 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 17:02:57,995 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 17:02:57,996 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 17:02:57,997 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 17:02:57,997 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 17:03:11,009 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 17:03:11,010 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 17:03:11,010 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 17:03:11,011 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 17:30:17,300 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 17:30:17,301 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 17:30:17,302 - INFO - [soc_250429pine.py:202] 특장차 접속 :  205.210.31.56
+2025-07-05 17:30:17,302 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 17:30:27,121 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 17:30:27,122 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 17:30:27,122 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 18:27:47,297 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 18:27:47,298 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 18:27:47,298 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 18:27:47,299 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 18:27:47,299 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 18:27:47,300 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 18:27:47,300 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 18:27:47,301 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 18:27:47,549 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 18:27:47,550 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 18:27:47,550 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 18:27:47,551 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 18:28:00,547 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 18:28:00,548 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 18:28:00,548 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 18:28:00,549 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 19:52:26,473 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 19:52:26,474 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 19:52:26,474 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 19:52:26,474 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 19:52:26,474 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 19:52:26,475 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 19:52:26,475 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 19:52:26,475 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 19:52:26,721 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 19:52:26,722 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 19:52:26,723 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 19:52:26,723 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 19:52:39,716 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 19:52:39,717 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 19:52:39,717 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 19:52:39,717 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 21:18:04,513 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 21:18:04,514 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 21:18:04,514 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 21:18:04,514 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 21:18:04,515 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 21:18:04,515 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 21:18:04,515 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 21:18:04,516 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 21:18:04,858 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 21:18:04,859 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 21:18:04,859 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 21:18:04,860 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 21:18:17,783 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 21:18:17,784 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 21:18:17,785 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 21:18:17,785 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 22:43:07,745 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 22:43:07,746 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 22:43:07,746 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 22:43:07,746 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 22:43:07,747 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 22:43:07,747 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 22:43:07,748 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 22:43:07,748 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-05 22:43:08,026 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-05 22:43:08,027 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-05 22:43:08,027 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-05 22:43:08,027 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-05 22:43:21,024 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-05 22:43:21,025 - INFO - [soc_250429pine.py:332] finish
+2025-07-05 22:43:21,026 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-05 22:43:21,026 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 00:31:48,983 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 00:31:48,984 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 00:31:48,984 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 00:31:48,984 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 00:31:48,985 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 00:31:48,985 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 00:31:48,985 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 00:31:48,986 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 00:31:49,291 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 00:31:49,291 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 00:31:49,292 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 00:31:49,292 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 00:32:02,254 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 00:32:02,255 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 00:32:02,255 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 00:32:02,256 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 01:56:21,751 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 01:56:21,752 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 01:56:21,752 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 01:56:21,752 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 01:56:21,753 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 01:56:21,753 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 01:56:21,753 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 01:56:21,754 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 01:56:22,001 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 01:56:22,001 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 01:56:22,002 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 01:56:22,002 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 01:56:35,040 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 01:56:35,040 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 01:56:35,040 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 01:56:35,041 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 03:20:34,745 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 03:20:34,745 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 03:20:34,746 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 03:20:34,746 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 03:20:34,746 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 03:20:34,747 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 03:20:34,747 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 03:20:34,748 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 03:20:34,992 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 03:20:34,992 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 03:20:34,993 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 03:20:34,993 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 03:20:47,969 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 03:20:47,970 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 03:20:47,970 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 03:20:47,971 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 04:44:41,629 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 04:44:41,630 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 04:44:41,630 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 04:44:41,631 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 04:44:41,631 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 04:44:41,632 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 04:44:41,632 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 04:44:41,632 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 04:44:41,891 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 04:44:41,892 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 04:44:41,892 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 04:44:41,893 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 04:44:54,890 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 04:44:54,891 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 04:44:54,891 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 04:44:54,891 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 06:08:45,921 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 06:08:45,922 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 06:08:45,923 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 06:08:45,923 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 06:08:45,923 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 06:08:45,924 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 06:08:45,924 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 06:08:45,925 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 06:08:46,242 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 06:08:46,242 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 06:08:46,243 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 06:08:46,243 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 06:08:59,267 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 06:08:59,268 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 06:08:59,268 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 06:08:59,269 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 07:10:21,538 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 07:10:21,538 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 07:10:21,539 - INFO - [soc_250429pine.py:202] 특장차 접속 :  205.210.31.214
+2025-07-06 07:10:21,539 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 07:10:31,265 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 07:10:31,266 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 07:10:31,266 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 07:32:38,114 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 07:32:38,115 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 07:32:38,115 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 07:32:38,115 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 07:32:38,115 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 07:32:38,116 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 07:32:38,116 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 07:32:38,117 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 07:32:38,440 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 07:32:38,440 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 07:32:38,441 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 07:32:38,441 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 07:32:51,443 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 07:32:51,444 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 07:32:51,445 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 07:32:51,445 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 08:56:25,697 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 08:56:25,698 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 08:56:25,699 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 08:56:25,699 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 08:56:25,699 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 08:56:25,700 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 08:56:25,700 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 08:56:25,701 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 08:56:25,962 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 08:56:25,963 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 08:56:25,963 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 08:56:25,963 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 08:56:38,965 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 08:56:38,966 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 08:56:38,966 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 08:56:38,967 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 10:20:15,266 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 10:20:15,267 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 10:20:15,267 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 10:20:15,267 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 10:20:15,268 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 10:20:15,268 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 10:20:15,268 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 10:20:15,269 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 10:20:15,536 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 10:20:15,537 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 10:20:15,537 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 10:20:15,537 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 10:20:28,624 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 10:20:28,625 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 10:20:28,625 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 10:20:28,626 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 11:44:03,828 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 11:44:03,828 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 11:44:03,829 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 11:44:03,829 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 11:44:03,829 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 11:44:03,830 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 11:44:03,830 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 11:44:03,831 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료
+2025-07-06 11:44:04,135 - INFO - [soc_250429pine.py:139] __init__ 호출 MyTCPHandler1
+2025-07-06 11:44:04,136 - INFO - [soc_250429pine.py:164] 특장차 setup 호출
+2025-07-06 11:44:04,136 - INFO - [soc_250429pine.py:202] 특장차 접속 :  45.140.17.26
+2025-07-06 11:44:04,137 - INFO - [soc_250429pine.py:203] 현재 특장차 Client 접속수 : 1
+2025-07-06 11:44:17,092 - ERROR - [soc_250429pine.py:314] ==> 특장차 ConnectionResetError
+Traceback (most recent call last):
+  File "/app/soc_250429pine.py", line 206, in handle
+    data = conn.recv(recv_len).decode(encoding=recv_encoding)
+ConnectionResetError: [Errno 104] Connection reset by peer
+2025-07-06 11:44:17,093 - INFO - [soc_250429pine.py:332] finish
+2025-07-06 11:44:17,094 - INFO - [soc_250429pine.py:336] 현재 특장차 Client 접속수 : 0
+2025-07-06 11:44:17,094 - INFO - [soc_250429pine.py:190] 특장차 종료 메시지 전송 완료

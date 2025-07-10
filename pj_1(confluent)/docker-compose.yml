@@ -6,6 +6,7 @@ services:
     build: .
     ports:
       - "6000:6000"
+    restart: always      
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
@@ -22,6 +23,7 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
+    restart: always      
     networks:
       - daa-kafka-cluster-network      
     environment:
@@ -35,6 +37,7 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
+    restart: always
     networks:
       - daa-kafka-cluster-network      
     environment:
@@ -43,11 +46,12 @@ services:
       - TZ=Asia/Seoul      
     command: python nodemqtt_2.py
 
-  vehi:
+  vehicle:
     build: .
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
+    restart: always
     networks:
       - daa-kafka-cluster-network      
     environment:
@@ -55,12 +59,26 @@ services:
       - ZOOKEEPER_CONNECT=daa-zoo1:2888
       - TZ=Asia/Seoul
     command: python vehicle.py 
+  vehi:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+      - ./sqlite_db:/app/sqlite_db
+    restart: always
+    networks:
+      - daa-kafka-cluster-network      
+    environment:
+      - KAFKA_BROKER=daa-kafka1:19092
+      - ZOOKEEPER_CONNECT=daa-zoo1:2888
+      - TZ=Asia/Seoul
+    command: python vehi.py 
 
   stsw:
     build: .
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
+    restart: always
     networks:
       - daa-kafka-cluster-network      
     environment:

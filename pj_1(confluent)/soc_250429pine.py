@@ -18,7 +18,6 @@ import jpype.imports
 from jpype.types import *
 import random
 
-
 client_sockets_1 = []
 client_sockets_2 = []
 
@@ -45,6 +44,7 @@ recv_encoding = 'CP949'
 # jpype.addClassPath("watosysEncrypt_not_otp_v1.0.0.jar")
 # jvm_msg_encrypt_class = jpype.JClass("watosys.utils.eg.msg.MsgEncrypt")
 
+
 def sendDisconnectAll(client_sockets):
     logger.info("모든 접속자와의 연결을 끊음")
     msg = 'Disconnect'
@@ -55,6 +55,7 @@ def sendDisconnectAll(client_sockets):
         conn.close()
 
     client_sockets.clear()
+
 
 def sendAll(client_sockets, msg):
     msg += '\r\n';
@@ -67,14 +68,16 @@ def sendAll(client_sockets, msg):
         except Exception as e:
             logging.error(f"메시지 전송 실패: {client[1]}, 오류: {e}")  # 전송 실패 로그
 
+
 def sendString(conn, msg):
     msg += '\r\n'
     conn.sendall(msg.encode(encoding=send_encoding))
 
+
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
-    
+
     #logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
 
 
@@ -94,7 +97,7 @@ def create_rotating_log(path, _config):
         set_level = logging.NOTICE
     elif _logger_level == "ERR":
         set_level = logging.ERROR
-        
+
     global logger
     """
     Creates a rotating log
@@ -104,9 +107,9 @@ def create_rotating_log(path, _config):
     logger.setLevel(set_level)
 
     #print("_logger_level: {0}, _logger_backupcount:{1}, _logger_when: {2}".format(_logger_level, _logger_backupcount, _logger_when ));
-    
+
     # add a rotating handler
-    """ 
+    """
     handler = RotatingFileHandler(path, maxBytes=100000000,
                                   backupCount=5)
     """
@@ -115,12 +118,12 @@ def create_rotating_log(path, _config):
                                        interval=int(_logger_interval),
                                        backupCount=int(_logger_backupcount),
                                        encoding='utf-8')
-                                          
+
     handler.suffix = "-%Y%m%d_%H-%M-%S"
-    
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] %(message)s' )    
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] %(message)s')
     handler.setFormatter(formatter)
-    
+
     logger.addHandler(handler)
 
 
@@ -131,7 +134,7 @@ def get_log():
 class MyTCPHandler1(socketserver.BaseRequestHandler):
 
     logger = get_log()
-    
+
     def __init__(self, request, client_address, server):
         logging.info("__init__ 호출 MyTCPHandler1")
         # Create a lock object
@@ -141,11 +144,11 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         self.vehicle_location = None
         self.edgeId = None
         self.edgeTy = None
-        self.userId = None
+        self.userId = "specialuser"
         self.timer_interval = 3  # 초 간격으로 작업 실행
 
         socketserver.BaseRequestHandler.__init__(self, request, client_address, server)
-        
+
         return
 
     def periodic_task(self):
@@ -159,12 +162,13 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
     def setup(self):
         logging.info("특장차 setup 호출")
-        
+
         return socketserver.BaseRequestHandler.setup(self)
+
     def finish_message(self):
-            
+
             now = datetime.datetime.now()
-            
+
             header_repack = dict()
             header_repack["cmd"] = str("event")
             header_repack["actn"] = str("event")
@@ -175,7 +179,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
             header_repack["edgeId"] = self.edgeId
             header_repack["edgeTy"] = self.edgeTy
             new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-            header_repack["timestamp"] = new_timestamp    
+            header_repack["timestamp"] = new_timestamp
             header_repack["command"] = "60330"
 
             json_message = dict()
@@ -184,22 +188,23 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
             send_kafka_msg('connect', message=json_message)
             logging.info("특장차 종료 메시지 전송 완료")
+
     def handle(self):
         global g_work_info
         conn = self.request  # 접속한 클라이언트 소켓
         addr = self.client_address[0]
         recv_len = 1024
         client_sockets_1.append((conn, addr))
-        
+
         buf = ""
 
         #cur_thread = threading.current_thread()
-        logging.info("특장차 접속 :  {}".format( self.client_address[0]))
+        logging.info("특장차 접속 :  {}".format(self.client_address[0]))
         logging.info("현재 특장차 Client 접속수 : {0}".format(len(client_sockets_1)))
         while True:
             try:
                 data = conn.recv(recv_len).decode(encoding=recv_encoding)
-                #print(f"data : {data}")
+
                 if not data:
                     break
 
@@ -209,7 +214,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 if index == -1:
                     continue
                 else:
-                    with self.lock: 
+                    with self.lock:
                         now = datetime.datetime.now()
                         data = buf[0:index + 1]
                         data = data.replace("\n", '')
@@ -237,7 +242,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                             header_repack["strtpnt"] = "E"
                             header_repack["dstn"] = "N"
 
-                            header_repack["userId"] = ""
+                            header_repack["userId"] = "specialuser"
                             self.edgeId = header_repack["edgeId"] = (res["VID"])
                             self.edgeTy = header_repack["edgeTy"] = (res["edgeTy"])
                             header_repack["timestamp"] = (res["timestamp"])
@@ -292,7 +297,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                                 json_message["data"] = res["data"]
 
                                 send_kafka_msg('connect', message=json_message)
-                                
+
                         except json.decoder.JSONDecodeError as err:
                             logging.exception("json.decoder.JSONDecodeError {0}, [{1}]".format(err, data))
                             continue
@@ -314,15 +319,15 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
                 logger.exception("==> 특장차 KeyboardInterrupt")
                 #break
             except OSError:
-                logger.exception("==> 특장차 OSError")   
+                logger.exception("==> 특장차 OSError")
                 break
             except UnicodeDecodeError:
-                logger.exception("==> 특장차 UnicodeDecodeError")   
+                logger.exception("==> 특장차 UnicodeDecodeError")
                 buf = ''
             except json.decoder.JSONDecodeError:
-                logger.exception("==> 특장차 json.decoder.JSONDecodeError")   
+                logger.exception("==> 특장차 json.decoder.JSONDecodeError")
                 buf = ''
-                
+
     def finish(self):
         logger.info("finish")
         conn = self.request
@@ -330,7 +335,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
         client_sockets_1.remove((conn, addr))
         logging.info("현재 특장차 Client 접속수 : {0}".format(len(client_sockets_1)))
         self.finish_message()  # 종료 메시지 전송
-        return socketserver.BaseRequestHandler.finish(self)  
+        return socketserver.BaseRequestHandler.finish(self)
 class ThreadedTCPRequestHandler(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
@@ -346,10 +351,10 @@ def start_kafka_consumer():
                 else:
                     logging.error(f"Kafka 에러 발생: {msg.error()}")
                 continue
-            try: 
+            try:
                 msg_value = json.loads(msg.value().decode('utf-8'))
                 sendAll(client_sockets_1, msg_value)
-                logging.info(f"특장차 메시지 전송 완료: {client_sockets_1}")
+                
             except json.JSONDecodeError as e:
                 logging.error(f"JSON 디코드 오류: {e}")
             except Exception as e:
@@ -362,7 +367,6 @@ if __name__ == "__main__":
     _config.read(CONFIG, encoding=file_encoding) # definition.py에 등록된 config.ini
 
     _config['APP']['CMD_FILE'] # CMD_FILE
-    
 
     _host1 = _config['SOCKET']['SERVER_HOST1'] # Server IP
     _port1 = int(_config['SOCKET']['SERVER_PORT1']) # Server Port
@@ -383,23 +387,23 @@ if __name__ == "__main__":
 
     _kafka_broker = _config['KAFKA']['KAFKA_BROKER']
     _kafka_port = _config['KAFKA']['KAFKA_PORT']
-    #_edgeid = _config['APP']['EDGEID'] 
-    #_edgety = _config['APP']['EDGETY'] 
-    
+    #_edgeid = _config['APP']['EDGEID']
+    #_edgety = _config['APP']['EDGETY']
+
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])
-    
+
     HOST1, PORT1 = _host1, _port1
-    
+
     KAFKA_BROKER = f'{_kafka_broker}:{_kafka_port}'
 
     producer_config = {'bootstrap.servers': KAFKA_BROKER}
     producer = Producer(producer_config)
 
-    consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': random.randint(0, 100), 'auto.offset.reset': 'latest'}
+    consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': 'socket_1_mqtt_group', 'auto.offset.reset': 'latest'}
     consumer = Consumer(consumer_config)
     consumer.subscribe(['special'])
-    
+
     try:
         server1 = ThreadedTCPRequestHandler((socket.gethostbyname(HOST1), PORT1), MyTCPHandler1)
     except ValueError:
@@ -415,22 +419,22 @@ if __name__ == "__main__":
     # Exit the server thread when the main thread terminates
     server_thread1.daemon = True
     server_thread1.start()
-    
+
     # 카프카 소비자 스레드 시작
     consumer_thread = threading.Thread(target=start_kafka_consumer)
     consumer_thread.daemon = True
     consumer_thread.start()
-    
-    with open(_command_file_path, 'r', encoding='utf-8') as file:
-        command_tbl = json.load(file)    
 
-    
+    with open(_command_file_path, 'r', encoding='utf-8') as file:
+        command_tbl = json.load(file)
+
+
     try:
         server1.serve_forever()
     except KeyboardInterrupt:
         print("==> Main KeyboardInterrupt")
     except OSError:
-        print("==> Main OSError")            
+        print("==> Main OSError")
     server1.server_close()
     server1.shutdown()
     consumer.close()
