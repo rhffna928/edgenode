@@ -290,7 +290,7 @@ class Mqtt:
             _dtlActn = str(res["header"]["dtlActn"])
             _strtpnt = str(res["header"]["strtpnt"])
             _dstn = str(res["header"]["dstn"])
-            _userId = str(res["header"]["userId"])
+            self.userId = _userId = str(res["header"]["userId"])
             _edgeId = str(res["header"]["edgeId"])
             _edgeTy = str(res["header"]["edgeTy"])
             _timestamp = str(res["header"]["timestamp"])
@@ -416,6 +416,7 @@ class Mqtt:
                         decoded_data = jvm_msg_encrypt_class.decode(_timestamp, reqdata)
                         resdata4edge = decoded_data
                 elif _cmd == "res":
+                    logging.info("")
                     send_direction = Constant.EDGE
                     _dstn_res = "E"
                     

@@ -68,11 +68,9 @@ def sendAll(client_sockets, msg):
         except Exception as e:
             logging.error(f"메시지 전송 실패: {client[1]}, 오류: {e}")  # 전송 실패 로그
 
-
 def sendString(conn, msg):
     msg += '\r\n'
     conn.sendall(msg.encode(encoding=send_encoding))
-
 
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
@@ -126,10 +124,8 @@ def create_rotating_log(path, _config):
 
     logger.addHandler(handler)
 
-
 def get_log():
     return logger
-
 
 class MyTCPHandler1(socketserver.BaseRequestHandler):
 

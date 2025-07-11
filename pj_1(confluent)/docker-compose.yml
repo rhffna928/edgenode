@@ -20,6 +20,8 @@ services:
 
   mobile:
     build: .
+    ports:
+      - "31910:31910"    
     volumes:
       - ./logs:/app/logs
       - ./sqlite_db:/app/sqlite_db
