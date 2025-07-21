@@ -1,2 +1,0 @@
-2025-07-14 04:40:44,627 - INFO - [nodemqtt_2.py:584] %%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time : 10.065ms , (2025-07-14 04:40:44.627380 - 2025-07-14 04:40:44.617315)
-2025-07-14 04:40:44,628 - INFO - [nodemqtt_2.py:585] EDGE 수신 : event event all N H None 

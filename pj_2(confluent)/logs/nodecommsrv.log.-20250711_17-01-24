@@ -1,8 +1,0 @@
-2025-07-12 18:30:56,263 - INFO - [nodemqtt_2.py:584] %%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time : 1009.752ms , (2025-07-12 18:30:56.262818 - 2025-07-12 18:30:55.253066)
-2025-07-12 18:30:56,264 - INFO - [nodemqtt_2.py:585] EDGE 수신 : event event all N H None 
-2025-07-12 20:35:40,249 - INFO - [nodemqtt_2.py:584] %%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time : 16.373ms , (2025-07-12 20:35:40.248602 - 2025-07-12 20:35:40.232229)
-2025-07-12 20:35:40,249 - INFO - [nodemqtt_2.py:585] EDGE 수신 : event event all N H None 
-2025-07-12 20:35:46,079 - INFO - [nodemqtt_2.py:584] %%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time : 9.806ms , (2025-07-12 20:35:46.079545 - 2025-07-12 20:35:46.069739)
-2025-07-12 20:35:46,080 - INFO - [nodemqtt_2.py:585] EDGE 수신 : event event all N H None 
-2025-07-13 15:52:40,451 - INFO - [nodemqtt_2.py:584] %%%%%%%%%%%%%%%%%%%%%%%%% Edgesocket -> nodemqtt delay_time : 9.535ms , (2025-07-13 15:52:40.451689 - 2025-07-13 15:52:40.442154)
-2025-07-13 15:52:40,452 - INFO - [nodemqtt_2.py:585] EDGE 수신 : event event all N H None 
