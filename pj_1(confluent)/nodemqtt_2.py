@@ -420,7 +420,7 @@ class Mqtt:
                     _dstn_res = "E"
                     
                     if _actn == "init":
-                        resdata4edge = str(json.dumps(res["data"], ensure_ascii=False))
+                        resdata4edge = str(res["data"])
                     elif _actn == "globalpath":
                         resdata4edge = str(json.dumps(res["data"], ensure_ascii=False))
             elif _strtpnt == "M":
@@ -457,6 +457,8 @@ class Mqtt:
                 start_time = time.time()
                 if _actn == "init":
                     send_data = jvm_msg_encrypt_class.decode(_timestamp, str(data_message))
+                    send_message = json.loads(str(send_data), strict=True)
+                    send_kafka_msg("init", send_message)
                 else:
                     send_data = jvm_msg_encrypt_class.decode(_timestamp, _edgeId, str(data_message))
 
@@ -495,7 +497,7 @@ class Mqtt:
             header_repack["dtlActn"] = str("common")
             header_repack["strtpnt"] = "N"
             header_repack["dstn"] = "H"
-            header_repack["userId"] = "specialuser"
+            header_repack["userId"] = self.userId
             header_repack["edgeId"] = self.edgeId
             header_repack["edgeTy"] = self.edgeTy
             new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -523,6 +525,7 @@ class Mqtt:
                 logging.info("************** work_doing_monitor ******************** {0}".format(data_message))
 
                 mqtt.pubHub4Node(send_message)
+                send_kafka_msg("mobile", send_message)
             self.vehicle_info = None
             self.vehicle_location = None
 

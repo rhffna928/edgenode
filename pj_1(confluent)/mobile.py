@@ -13,9 +13,10 @@ import paho.mqtt.client as mqtt_client
 from pathlib import Path
 import configparser
 import logging
+from SqliteController import SqliteController
 from logging.handlers import RotatingFileHandler
 from logging.handlers import TimedRotatingFileHandler
-from confluent_kafka import Producer
+from confluent_kafka import Consumer, KafkaError, Producer
 from constant import Constant
 
 # java jar 임포트
@@ -36,13 +37,14 @@ FIRST_RECONNECT_DELAY = 1
 RECONNECT_RATE = 2
 MAX_RECONNECT_COUNT = 12
 MAX_RECONNECT_DELAY = 60
+EDGEID = None
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG = Path(ROOT_DIR) / 'nodecommsrv.ini' # config.ini 설정
 logger = None
 file_encoding = 'utf-8'
 send_encoding = 'CP949'
-recv_encoding = 'CP949'
+recv_encoding = 'utf-8'
 
 # JVM 시작
 jpype.startJVM()
@@ -78,7 +80,7 @@ def sendDisconnectAll(client_sockets):
 def sendAll(client_sockets, msg):
     msg += '\r\n';
 
-    for client in client_sockets:        
+    for client in client_sockets:
         conn = client[0]
         conn.sendall(msg.encode(encoding=send_encoding))
 
@@ -141,7 +143,15 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
         logging.info("__init__ 호출 MyTCPHandler2")
         
         socketserver.BaseRequestHandler.__init__(self, request, client_address, server)
-       
+        self.sqlitectrl = SqliteController("./sqlite_db/test.db")
+        self._edgeId = None
+        self.edgeTy = None
+        db_conditions = {}
+        db_conditions['select_count'] = f'''SELECT count(*) FROM "VEHICLE_LIST" WHERE "USER_ID" = (SELECT "USER_ID" FROM  "VEHICLE_LIST" WHERE "VEHICLE_ID"='{EDGEID}')'''
+        db_conditions['select_string'] = f'''SELECT  "USER_ID" FROM "VEHICLE_LIST" WHERE "VEHICLE_ID" ='{EDGEID}' '''
+        result = self.sqlitectrl.base_select(db_conditions)
+        self.user_id = result["datas"][0][0]
+        
         return
 
     def setup(self):
@@ -157,7 +167,6 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
         client_sockets_2.append((conn, addr))
 
         buf = ""
-        
 
         logging.info("사용자(모바일) 접속 Client {0}".format(len(client_sockets_2)))
 
@@ -178,14 +187,10 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                 if not data:
                     logger.info('>> 사용자(모바일)  Disconnected by ' + addr)
                     break
-                
-                #logger.info(f'{cur_thread} - 데이터 수신:{data}   {len(data)}')
 
                 buf += data
 
                 index = buf.find("\r\n")
-
-                #logger.info(f'버퍼링 데이터 :[{buf}]   {len(buf)} , index 위치는: ' + str(index) )
 
                 if index == -1:
                     #logger.info("완전체가 없다. 버퍼에 추가하고 수신대기로 " + buf)
@@ -196,7 +201,6 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                     #data = buf + data   
 
                     data = data.replace("\r\n", '')
-                    #logger.info("====> 사용자(모바일) 로부터 완전체가 있다. 수신데이터:[" + data + "] , " + str(len(data)))
 
                     buf = data.replace(data, '')
 
@@ -207,7 +211,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                     json_message2 = dict()
 
                     try:
-                        res=json.loads(str(data))
+                        res = json.loads(str(data))
                     
                         _cmd = str(res["header"]["cmd"])
                         _actn = str(res["header"]["actn"])
@@ -217,7 +221,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                         _userId = str(res["header"]["userId"])
                         _edgeId = str(res["header"]["edgeId"])
                         _edgeTy = str(res["header"]["edgeTy"])
-                        _timestamp = str(res["header"]["sndngDt"])
+                        _timestamp = str(res["header"]["timestamp"])
 
                         now = datetime.datetime.now()
                         end_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -265,10 +269,8 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                                 otherheader["dstn"] = "H"
                                 otherheader["timestamp"] = _timestamp
 
-                                otherresdata = res["data"]                                
+                                otherresdata = res["data"]
 
-                        elif _cmd == "heartbeat":
-                            send_direction = Constant.NONE
                         elif _cmd == "req":
                             _cmd_req = "res"
                             
@@ -292,7 +294,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                                 db_edgeList.append(("트랙터3", "123456IJKL"))
                                 db_edgeList.append(("트랙터4", "ABCD123456"))
 
-                                if _userId != "specialuser":
+                                if _userId != self.user_id:
                                     _resultCd = 1000
                                     _resultMssage = "사용자 정보 없음"
                                 else:
@@ -320,7 +322,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                         resheader["strtpnt"] = _strtpnt_res
                         resheader["dstn"] = _dstn_res
                         resheader["edgeId"] = _edgeId
-                        resheader["userId"] = _edgeid
+                        resheader["userId"] = self.user_id
                         resheader["timestamp"] = _timestamp
                         resheader["command"] = "05421"
                         
@@ -331,11 +333,11 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                         if send_direction == Constant.MOBILESOCK1:
                             #sendAll(client_sockets_1, send_message)
-                            send_kafka_msg('connect', send_message)
+                            #send_kafka_msg('connect', send_message)
                             pass
                         elif send_direction == Constant.MOBILESOCK2:
-                            send_kafka_msg('mobile', send_message)
-                            sendAll(client_sockets_2, send_message)
+                            #send_kafka_msg('mobile', send_message)
+                            # sendAll(client_sockets_2, send_message)
 
                         if send_direction_other == Constant.EDGEHUB:
                             json_message2["header"] = otherheader
@@ -343,7 +345,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                             send_message2 = json.dumps(json_message2, ensure_ascii=False)
 
-                            send_kafka_msg('event',json_message2)
+                            #send_kafka_msg('event',json_message2)
 
                     except json.decoder.JSONDecodeError as err:
                         logging.exception("json.decoder.JSONDecodeError %s", err)
@@ -382,6 +384,29 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
         return socketserver.BaseRequestHandler.finish(self)
 
+def start_kafka_consumer():
+    while True:
+        try:
+            msg = consumer.poll(timeout=1.0)
+            if msg is None:
+                continue
+            if msg.error():
+                if msg.error().code() == KafkaError._PARTITION_EOF:
+                    logger.info("파티션 끝")
+                else:
+                    logging.error(f"Kafka 에러 발생: {msg.error()}")
+                continue
+            try:
+                msg_value = json.loads(msg.value().decode('utf-8'))
+                sendAll(client_sockets_2, msg_value)
+                logging.info(f"모바일 메시지 전송 완료: {client_sockets_2}, 메시지: {msg_value}")
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON 디코드 오류: {e}")
+            except Exception as e:
+                logging.error(f"카프카 메시지 처리 오류: {e}")
+        except Exception as e:
+            logging.error(f"카프카 메시지 처리 중 오류 발생: {e}")
+
 class ThreadedTCPRequestHandler(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
@@ -409,8 +434,8 @@ if __name__ == "__main__":
     _pub_init_topic = _config['MQTT']['PUB_INIT_TOPIC']
     _pub_edgenode_topic = _config['MQTT']['PUB_EDGENODE_TOPIC']
 
-    _edgeid = _config['APP']['EDGEID'] 
-    _edgety = _config['APP']['EDGETY'] 
+    EDGEID = _config['APP']['EDGEID'] 
+    _edgeTy = _config['APP']['EDGETY'] 
 
     #Logger
     _logger_level = _config['LOGGER']['LOG_LEVEL']
@@ -426,7 +451,6 @@ if __name__ == "__main__":
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])
 
-        
     logger.info("구성정보파일 읽기 {0}".format(ROOT_DIR))
     logger.info("구성정보파일 읽기 {0}".format(_config))
     logger.info("구성정보파일 읽기 서버2:{0}, {1}".format(_host2, _port2))
@@ -455,11 +479,17 @@ if __name__ == "__main__":
         'auto.offset.reset': 'latest',
         'enable.auto.commit': False
     }
-    
+    consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': 'socket_2_mobile_group', 'auto.offset.reset': 'latest'}
+    consumer = Consumer(consumer_config)
+    consumer.subscribe(['mobile'])
+
     server_thread2 = threading.Thread(target=server2.serve_forever)
     server_thread2.daemon = True
     server_thread2.start()
-
+    
+    consumer_thread = threading.Thread(target=start_kafka_consumer)
+    consumer_thread.daemon = True
+    consumer_thread.start()
     # Edge <-> Node 메시지 정합을 위해 command 정의 파일 읽어온다.
     with open(_command_file_path, 'r', encoding='utf-8') as file:
         command_tbl = json.load(file)

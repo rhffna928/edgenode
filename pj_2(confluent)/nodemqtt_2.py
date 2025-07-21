@@ -33,7 +33,7 @@ CONFIG = Path(ROOT_DIR) / 'nodecommsrv.ini'
 logger = None
 file_encoding = 'utf-8'
 send_encoding = 'CP949'
-recv_encoding = 'CP949'
+recv_encoding = 'utf-8'
 
 # JVM 시작
 jpype.startJVM()
@@ -66,6 +66,7 @@ def sendString(conn, msg):
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
+    producer.poll(0) # 메시지를 즉시 전송하기 위해 poll 호출
 
 def create_rotating_log(path, _config):
     _logger_level = _config['LOG_LEVEL']
@@ -154,7 +155,7 @@ class Mqtt:
             _header["strtpnt"] = "N"
             _header["dstn"] = "H"
             _header["edgeId"] = self.edgeId
-            _header["userId"] = "12345"
+            _header["userId"] = ""
             _header["command"] = "00001"
             _header["edgeTy"] = self.edgeTy
             _header["timestamp"] = now_str
@@ -344,7 +345,7 @@ class Mqtt:
                         data = res["data"]
                         _initId = data["initId"]
                         
-                        db_userId = "specialuser"
+                        db_userId = self.userId
                         db_edgeList = []
 
                         db_edgeList.append(("트랙터1", "123456A"))
@@ -410,18 +411,19 @@ class Mqtt:
                             resdata_string = str(ret_data)
                             
                             send_data = jvm_msg_encrypt_class.encode(_timestamp, _edgeId, resdata_string)
-                            resdata = str(send_data)                           
+                            resdata = str(send_data)
                     elif _actn == "event":
                         send_direction = Constant.EDGE
                         decoded_data = jvm_msg_encrypt_class.decode(_timestamp, reqdata)
                         resdata4edge = decoded_data
                 elif _cmd == "res":
-                    logging.info("")
-                    send_direction = Constant.EDGE
-                    _dstn_res = "E"
                     
+                    send_direction = Constant.EDGE
+                    self.PUB_EDGENODE_MOBILE_TOPIC = self.TOPIC_SUBS_BASE + "/" + _userId
+                    _dstn_res = "E"
                     if _actn == "init":
-                        resdata4edge = str(json.dumps(res["data"], ensure_ascii=False))
+                        resdata4edge = str(res["data"])
+                        
                     elif _actn == "globalpath":
                         resdata4edge = str(json.dumps(res["data"], ensure_ascii=False))
             elif _strtpnt == "M":
@@ -429,7 +431,7 @@ class Mqtt:
 
         resheader["cmd"] = _cmd_req
         resheader["strtpnt"] = _strtpnt_res
-        resheader["dstn"] = _dstn_res        
+        resheader["dstn"] = _dstn_res
 
         if send_direction == Constant.EDGEHUB or send_direction == Constant.EDGE_EDGEHUB:
             
@@ -458,9 +460,11 @@ class Mqtt:
                 start_time = time.time()
                 if _actn == "init":
                     send_data = jvm_msg_encrypt_class.decode(_timestamp, str(data_message))
+                    send_message = json.loads(str(send_data), strict=True)
+                    send_kafka_msg("init", send_message)
                 else:
                     send_data = jvm_msg_encrypt_class.decode(_timestamp, _edgeId, str(data_message))
-
+                
                 end_time = time.time()
                 execution_time = (end_time - start_time) * 1000
                 logging.info("#1 DATA 인/디코드 실행 시간: {0}ms \n 보낼 메시지 : {1}".format(execution_time, data_message))
@@ -496,7 +500,7 @@ class Mqtt:
             header_repack["dtlActn"] = str("common")
             header_repack["strtpnt"] = "N"
             header_repack["dstn"] = "H"
-            header_repack["userId"] = ""
+            header_repack["userId"] = self.userId
             header_repack["edgeId"] = self.edgeId
             header_repack["edgeTy"] = self.edgeTy
             new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -548,7 +552,7 @@ class Mqtt:
             send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
             self.pubHub4Node(send_message)
             self.send_time = current_time
-
+            send_kafka_msg("mobile", send_message)
     def process_kafka_message(self, message):
         try:
             if not message.value():
@@ -598,6 +602,7 @@ class Mqtt:
                 elif _actn == "event":
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)    
                     self.pubHub4Node(send_message)
+                    send_kafka_msg("mobile", send_message)
                 elif _actn == "globalpath":
                     send_message = self.encoded_message(msg_data, _timestamp, _edgeId)     
                     self.pubHub4Node(send_message)
@@ -627,6 +632,7 @@ class Mqtt:
                     logging.info(f"######### 특장차 전송 완료 ######### {send_message}")
                 elif _actn in ["tractor", "cls"]:
                     self.special_data(msg_data, _timestamp, _edgeId)
+                    
 
             elif _cmd == "req":
                 if _actn == "init":
@@ -638,6 +644,7 @@ class Mqtt:
             elif _cmd == "event":
                 send_message = self.encoded_message(msg_data, _timestamp, _edgeId)
                 self.pubHub4Node(send_message)
+                send_kafka_msg("mobile", send_message)
             elif _cmd == "heartbeat":
                 send_message = json.dumps(msg_data, ensure_ascii=False)
                 self.pubHub4Node(send_message)

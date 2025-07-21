@@ -75,7 +75,7 @@ def sendString(conn, msg):
 def send_kafka_msg(topic, message):
     #카프카 메시지 전송
     producer.produce(topic, value=json.dumps(message).encode('utf-8'))
-
+    producer.poll(0) # 메시지를 즉시 전송하기 위해 poll 호출
     #logging.info(f"####카프카 {topic} - {message} 전송완료########### ")
 
 
@@ -171,7 +171,7 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
             header_repack["dtlActn"] = str("all")
             header_repack["strtpnt"] = "N"
             header_repack["dstn"] = "H"
-            header_repack["userId"] = ""
+            header_repack["userId"] = self.userId
             header_repack["edgeId"] = self.edgeId
             header_repack["edgeTy"] = self.edgeTy
             new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -184,14 +184,37 @@ class MyTCPHandler1(socketserver.BaseRequestHandler):
 
             send_kafka_msg('connect', message=json_message)
             logging.info("특장차 종료 메시지 전송 완료")
+            
+    def start_message(self):
 
+            now = datetime.datetime.now()
+
+            header_repack = dict()
+            header_repack["cmd"] = str("event")
+            header_repack["actn"] = str("event")
+            header_repack["dtlActn"] = str("all")
+            header_repack["strtpnt"] = "N"
+            header_repack["dstn"] = "H"
+            header_repack["userId"] = self.userId
+            header_repack["edgeId"] = _edgeid
+            header_repack["edgeTy"] = _edgety
+            new_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+            header_repack["timestamp"] = new_timestamp
+            header_repack["command"] = "60330"
+
+            json_message = dict()
+            json_message["header"] = header_repack
+            json_message["data"] = {"eventCode": "SYSSTART", "eventDescription": "시작", "eventType": "INFO", "eventSubType": "SYSSTART"}
+
+            send_kafka_msg('connect', message=json_message)
+            logging.info("특장차 시작 메시지 전송 완료")
     def handle(self):
         global g_work_info
         conn = self.request  # 접속한 클라이언트 소켓
         addr = self.client_address[0]
         recv_len = 1024
         client_sockets_1.append((conn, addr))
-
+        self.start_message()
         buf = ""
 
         #cur_thread = threading.current_thread()
@@ -383,8 +406,8 @@ if __name__ == "__main__":
 
     _kafka_broker = _config['KAFKA']['KAFKA_BROKER']
     _kafka_port = _config['KAFKA']['KAFKA_PORT']
-    #_edgeid = _config['APP']['EDGEID']
-    #_edgety = _config['APP']['EDGETY']
+    _edgeid = _config['APP']['EDGEID']
+    _edgety = _config['APP']['EDGETY']
 
     full_path = os.path.join(ROOT_DIR, "logs", "nodecommsrv.log")
     create_rotating_log(full_path, _config['LOGGER'])

@@ -62,7 +62,21 @@ services:
       - TZ=Asia/Seoul
     command: python vehicle.py 
 
-  stsw:
+  vehicle_list:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+      - ./sqlite_db:/app/sqlite_db
+    restart: always
+    networks:
+      - daa-kafka-cluster-network      
+    environment:
+      - KAFKA_BROKER=daa-kafka1:19092
+      - ZOOKEEPER_CONNECT=daa-zoo1:2888
+      - TZ=Asia/Seoul 
+    command: python vehicle_list.py 
+
+  trac:
     build: .
     volumes:
       - ./logs:/app/logs
@@ -74,7 +88,7 @@ services:
       - KAFKA_BROKER=daa-kafka1:19092
       - ZOOKEEPER_CONNECT=daa-zoo1:2888
       - TZ=Asia/Seoul      
-    command: python stsw.py
+    command: python trac.py
 
 networks:
   daa-kafka-cluster-network:

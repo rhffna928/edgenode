@@ -344,9 +344,7 @@ class SqliteController:
         except Exception as e:
             print(e)
             pass
-        
-        
-        
+
     def base_update(self, condition, datas):
         sql = ""
         stmtWhere = ""

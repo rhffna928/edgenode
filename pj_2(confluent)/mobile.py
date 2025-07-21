@@ -13,6 +13,7 @@ import paho.mqtt.client as mqtt_client
 from pathlib import Path
 import configparser
 import logging
+from SqliteController import SqliteController
 from logging.handlers import RotatingFileHandler
 from logging.handlers import TimedRotatingFileHandler
 from confluent_kafka import Consumer, KafkaError, Producer
@@ -36,6 +37,7 @@ FIRST_RECONNECT_DELAY = 1
 RECONNECT_RATE = 2
 MAX_RECONNECT_COUNT = 12
 MAX_RECONNECT_DELAY = 60
+EDGEID = None
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG = Path(ROOT_DIR) / 'nodecommsrv.ini' # config.ini 설정
@@ -141,7 +143,15 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
         logging.info("__init__ 호출 MyTCPHandler2")
         
         socketserver.BaseRequestHandler.__init__(self, request, client_address, server)
-       
+        self.sqlitectrl = SqliteController("./sqlite_db/test.db")
+        self._edgeId = None
+        self.edgeTy = None
+        db_conditions = {}
+        db_conditions['select_count'] = f'''SELECT count(*) FROM "VEHICLE_LIST" WHERE "USER_ID" = (SELECT "USER_ID" FROM  "VEHICLE_LIST" WHERE "VEHICLE_ID"='{EDGEID}')'''
+        db_conditions['select_string'] = f'''SELECT  "USER_ID" FROM "VEHICLE_LIST" WHERE "VEHICLE_ID" ='{EDGEID}' '''
+        result = self.sqlitectrl.base_select(db_conditions)
+        self.user_id = result["datas"][0][0]
+        
         return
 
     def setup(self):
@@ -284,7 +294,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                                 db_edgeList.append(("트랙터3", "123456IJKL"))
                                 db_edgeList.append(("트랙터4", "ABCD123456"))
 
-                                if _userId != "specialuser":
+                                if _userId != self.user_id:
                                     _resultCd = 1000
                                     _resultMssage = "사용자 정보 없음"
                                 else:
@@ -312,7 +322,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                         resheader["strtpnt"] = _strtpnt_res
                         resheader["dstn"] = _dstn_res
                         resheader["edgeId"] = _edgeId
-                        resheader["userId"] = _edgeid
+                        resheader["userId"] = self.user_id
                         resheader["timestamp"] = _timestamp
                         resheader["command"] = "05421"
                         
@@ -326,7 +336,8 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
                             #send_kafka_msg('connect', send_message)
                             pass
                         elif send_direction == Constant.MOBILESOCK2:
-                            sendAll(client_sockets_2, send_message)
+                            #send_kafka_msg('mobile', send_message)
+                            # sendAll(client_sockets_2, send_message)
 
                         if send_direction_other == Constant.EDGEHUB:
                             json_message2["header"] = otherheader
@@ -334,7 +345,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
 
                             send_message2 = json.dumps(json_message2, ensure_ascii=False)
 
-                            #send_kafka_msg('mobile',json_message2)
+                            #send_kafka_msg('event',json_message2)
 
                     except json.decoder.JSONDecodeError as err:
                         logging.exception("json.decoder.JSONDecodeError %s", err)
@@ -372,6 +383,7 @@ class MyTCPHandler2(socketserver.BaseRequestHandler):
         logging.info("현재 사용자 Client 접속수 : {0}".format(len(client_sockets_2)))
 
         return socketserver.BaseRequestHandler.finish(self)
+
 def start_kafka_consumer():
     while True:
         try:
@@ -387,7 +399,7 @@ def start_kafka_consumer():
             try:
                 msg_value = json.loads(msg.value().decode('utf-8'))
                 sendAll(client_sockets_2, msg_value)
-                logging.info(f"특장차 메시지 전송 완료: {client_sockets_2}, 메시지: {msg_value}")
+                logging.info(f"모바일 메시지 전송 완료: {client_sockets_2}, 메시지: {msg_value}")
             except json.JSONDecodeError as e:
                 logging.error(f"JSON 디코드 오류: {e}")
             except Exception as e:
@@ -422,8 +434,8 @@ if __name__ == "__main__":
     _pub_init_topic = _config['MQTT']['PUB_INIT_TOPIC']
     _pub_edgenode_topic = _config['MQTT']['PUB_EDGENODE_TOPIC']
 
-    _edgeid = _config['APP']['EDGEID'] 
-    _edgety = _config['APP']['EDGETY'] 
+    EDGEID = _config['APP']['EDGEID'] 
+    _edgeTy = _config['APP']['EDGETY'] 
 
     #Logger
     _logger_level = _config['LOGGER']['LOG_LEVEL']
@@ -470,7 +482,7 @@ if __name__ == "__main__":
     consumer_config = {'bootstrap.servers': KAFKA_BROKER, 'group.id': 'socket_2_mobile_group', 'auto.offset.reset': 'latest'}
     consumer = Consumer(consumer_config)
     consumer.subscribe(['mobile'])
-        
+
     server_thread2 = threading.Thread(target=server2.serve_forever)
     server_thread2.daemon = True
     server_thread2.start()
